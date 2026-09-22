@@ -502,6 +502,7 @@ export class ChoreSystem {
    * specific one (Night 1 puts the blood under the restroom mess).
    */
   mopSpill() {
+    this.g.inventory.stroke();
     const sp = this.spill;
     if (!sp) return;
     // Each pass takes a bite out of it, so the floor visibly gets cleaner and

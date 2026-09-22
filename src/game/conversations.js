@@ -30,6 +30,6 @@ export async function talkToCustomer(g,c){
   g.player.frozen=frozen;g.interact.enabled=enabled;
   if(c.dead||!c.group.parent||answer===null)return;
   const choice=options.find(x=>x.id===answer);
-  if(choice?.reply){g.ui.say(choice.reply,{who:c.def.name,secs:5});g.customers.play(c,'Idle_Talking_Loop',.15);setTimeout(()=>{if(!c.dead&&c.state==='counter')g.customers.play(c,'Idle_Loop',.2)},1800);}
+  if(choice?.reply){g.ui.say(choice.reply,{who:c.def.name,secs:5});g.customers.play(c,choice.id==='checkout'?'NC_Nod':'Idle_Talking_Loop',.15);setTimeout(()=>{if(!c.dead&&c.state==='counter')g.customers.play(c,'Idle_Loop',.2)},1800);}
   choice?.action?.();
 }

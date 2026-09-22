@@ -22,6 +22,7 @@ export class DeliveryScare {
     this.figure.add(this.visual);this.figure.userData.referenceMesh=true;this.syncCollider();
   }
   restore(phase='watch'){
+    this.visual.rotation.set(0,0,0);this.t=0;this.screamIn=2;
     this.hits=Math.min(3,this.g.state.data.delivery?.scareHits||0);this.stagger=0;this.path=[];this.pathIn=0;
     this.phase=phase;this.figure.position.set(...(phase==='defend'?[5.1,0,-4.0]:[18,0,-24]));this.figure.rotation.set(0,-.50,0);this.figure.visible=['watch','run','defend'].includes(phase);this.light.position.copy(this.figure.position).add(new THREE.Vector3(0,2.8,1.1));this.syncCollider();this.light.visible=this.figure.visible;
     if(this.figure.visible&&!this.g.station.colliders.includes(this.collider))this.g.station.colliders.push(this.collider);
@@ -110,5 +111,5 @@ export class DeliveryScare {
     const target=this.figure.position.clone().setY(1.85),delta=target.clone().sub(this.g.camera.position);
     if(delta.length()<38&&delta.normalize().dot(this.g.camera.getWorldDirection(new THREE.Vector3()))>.93&&this.g.interact._clearSight({id:'delivery_figure_sight'},target))this.activateRun();
   }
-  reset(){this.restorePower();this.phase='off';this.hits=0;this.path=[];this.stagger=0;this.figure.visible=false;this.light.visible=false;this.banner.hidden=true;this.g.player.emergencyRun=false;this.g.station.colliders=this.g.station.colliders.filter(c=>c!==this.collider);}
+  reset(){this.restorePower();this.visual?.rotation.set(0,0,0);this.figure.position.set(18,0,-24);this.figure.rotation.set(0,-.50,0);this.t=0;this.pathIn=0;this.screamIn=2;this.syncCollider();this.phase='off';this.hits=0;this.path=[];this.stagger=0;this.figure.visible=false;this.light.visible=false;this.banner.hidden=true;this.g.player.emergencyRun=false;this.g.station.colliders=this.g.station.colliders.filter(c=>c!==this.collider);}
 }

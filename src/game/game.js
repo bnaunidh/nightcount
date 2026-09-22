@@ -748,6 +748,7 @@ export class Game {
       this.worldUse.update(dt);
       this.delivery.update(dt);
       this.doppelganger.update(dt);
+      this.inventory.update(dt);
       this.shotgun.update(dt);
       this.phone.update(dt);
       this.script?.update?.(dt);

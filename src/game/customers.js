@@ -309,7 +309,7 @@ export class CustomerSystem {
     }
     mixer?.addEventListener("finished", ({ action }) => {
       const name = action.getClip().name;
-      if (!c.dead && c.current === name && ["NC_Hand_Over", "NC_Point_Behind"].includes(name)) {
+      if (!c.dead && c.current === name && ["NC_Hand_Over", "NC_Point_Behind", "NC_Greet", "NC_Nod", "NC_Check_Watch"].includes(name)) {
         this.play(c, this.idleFor(c), 0.22);
       }
     });
@@ -321,7 +321,7 @@ export class CustomerSystem {
 
   idleFor(c) {
     const name = c.id === "ATT" ? "NC_Stand_Still_Loop"
-      : c.id === "A7" ? "NC_Wait_Cold_Loop" : "Idle_Loop";
+      : c.id === "A7" ? "NC_Wait_Cold_Loop" : "NC_Counter_Wait_Loop";
     return c.actions[name] ? name : "Idle_Loop";
   }
 
@@ -343,6 +343,7 @@ export class CustomerSystem {
 
   /** Standard entrance: park (if they have a car), walk in, come to the counter. */
   async arrive(id, opts = {}) {
+    const generation=this.g.gen;
     const def = CAST[id];
     // arrivals always take a pump bay: the long outfield bays are for cars
     // that are parked, not for people who are about to walk in
@@ -354,17 +355,15 @@ export class CustomerSystem {
       vehicle = await this.g.vehicles.arrive(def, bay, {
         fromEast: bay.pos.x >= 0,
       });
-      if (this.g.mode !== "play" && this.g.mode !== "cutscene") return null;
+      if (vehicle.dead || generation!==this.g.gen || (this.g.mode !== "play" && this.g.mode !== "cutscene")) return null;
     }
     const from = def.vehicle && !opts.noVehicle
-      ? new THREE.Vector3(bay.pos.x + (bay.side || 1) * 1.3, 0, bay.pos.z + 1.0)
+      ? vehicle.motion.doorPoint()
       : new THREE.Vector3(opts.fromX ?? 12, 0, -3.5);
     const c = await this.spawn(id, { at: from, ...opts });
+    if(generation!==this.g.gen){this.despawn(c);return null;}
     c.vehicle = vehicle;
-    // the door is opened by somebody getting out of it, not before they exist
-    this.g.audio.play("veh_car_door", { vol: 0.45, pos: from.clone(), ref: 4 });
-    await new Promise((r) => setTimeout(r, 900));
-    this.walk(c, [
+    const walkInside=()=>{if(c.dead||!c.group.parent)return;this.walk(c, [
       [from.x * 0.6 + 2, -2.2],
       [5.1, -1.2],
       [5.1, 1.2],
@@ -372,15 +371,18 @@ export class CustomerSystem {
       [L.CUSTOMER.x, L.CUSTOMER.z],
     ], () => {
       c.group.rotation.y = Math.PI;
-      this.play(c, "Idle_Loop");
+      this.play(c, "NC_Greet");
       c.state = "counter";
       this.g.bus.emit("customer:counter", c);
     });
+    };
+    if(vehicle?.motion)this.transferCar(c,false,walkInside);else walkInside();
     // door chime as they come through
     setTimeout(() => {
+      if(c.dead||!c.group.parent)return;
       this.g.station.setDoor("entry", true);
       this.g.audio.play("int_doorchime", { vol: 0.6 });
-      setTimeout(() => this.g.station.setDoor("entry", false), 2600);
+      setTimeout(() => {if(generation===this.g.gen)this.g.station.setDoor("entry", false);}, 2600);
     }, 2600);
     return c;
   }
@@ -444,13 +446,14 @@ export class CustomerSystem {
     if(c.dead)return;
     c.state = "leaving";
     const vpos = CustomerSystem.vehiclePos(c.vehicle);
+    const door=c.vehicle?.motion?.doorPoint();
     this.walk(c, [
       [L.CUSTOMER.x + 2.0, 1.0],
       [5.1, 1.0],
       [5.1, -2.4],
-      [vpos ? vpos.x+(c.vehicle?.width||1.8)/2+.45 : 14, vpos ? vpos.z : -4.0],
+      [door?.x ?? (vpos ? vpos.x+(c.vehicle?.width||1.8)/2+.45 : 14), door?.z ?? (vpos ? vpos.z : -4.0)],
     ], () => {
-      this.despawn(c);
+      const seated=()=>{if(c.dead)return;this.despawn(c);
       if (c.vehicle) {
         if (permanent || c.def.living) {
           if (vpos) this.g.audio.play("veh_car_leave", { vol: 0.5, pos: vpos.clone() });
@@ -460,12 +463,38 @@ export class CustomerSystem {
         }
       }
       this.g.bus.emit("customer:left", c, permanent);
+      };
+      if(c.vehicle?.motion&&!c.vehicle.dead)this.transferCar(c,true,seated);else seated();
     });
     setTimeout(() => {
+      if(c.dead||!c.group.parent)return;
       this.g.station.setDoor("entry", true);
       this.g.audio.play("int_doorchime", { vol: 0.55 });
       setTimeout(() => this.g.station.setDoor("entry", false), 2400);
     }, 2000);
+  }
+
+  transferCar(c,enter,done) {
+    const v=c.vehicle;if(!v?.motion||v.dead){done?.();return;}
+    c.state=enter?'entering_car':'exiting_car';c.path=[];c.onArrive=null;
+    const outside=v.motion.doorPoint(),inside=v.motion.doorPoint(true);
+    c.carTransfer={v,enter,done,t:0,from:enter?outside:inside,to:enter?inside:outside};
+    c.group.position.copy(c.carTransfer.from);c.group.visible=enter;
+    c.group.rotation.y=Math.atan2(c.carTransfer.to.x-c.carTransfer.from.x,c.carTransfer.to.z-c.carTransfer.from.z);
+    this.play(c,enter?'NC_Car_Enter':'NC_Car_Exit',.12);v.motion.door(true);
+    this.g.audio.play('veh_car_door',{vol:.32,pos:outside,ref:4});
+  }
+
+  updateTransfer(c,dt) {
+    const tr=c.carTransfer;if(!tr)return false;
+    if(tr.v.dead){c.carTransfer=null;this.despawn(c);return true;}
+    tr.t+=dt;
+    const u=THREE.MathUtils.smoothstep(tr.t,.45,2.15);
+    c.group.position.lerpVectors(tr.from,tr.to,u);
+    c.group.visible=tr.enter?u<.88:u>.12;
+    if(tr.t>=2.15)tr.v.motion.door(false);
+    if(tr.t>=2.85){c.carTransfer=null;c.group.visible=true;tr.done?.();}
+    return true;
   }
 
   _driveOff(v) {
@@ -484,6 +513,7 @@ export class CustomerSystem {
   }
 
   despawn(c) {
+    if(c.carTransfer){c.carTransfer.v.motion?.door(false);c.carTransfer=null;}
     c.removeTalk?.();
     if (c.collider) { const i = this.g.station.colliders.indexOf(c.collider); if (i >= 0) this.g.station.colliders.splice(i, 1); }
     c.group.parent?.remove(c.group);
@@ -493,6 +523,7 @@ export class CustomerSystem {
   shoot(c) {
     if(!c||c.dead||c.cameraOnly||!c.group.visible)return false;
     this.g.audio.humanReaction(c.id==='A2'?'female_gasp':'male_hurt');
+    if(c.carTransfer){c.carTransfer.v.motion?.door(false);c.carTransfer=null;}
     c.dead=true;c.state='collapsed';c.path=[];c.onArrive=null;c.removeTalk?.();
     this.g.choices.cancel();
     if(c.collider)this.g.station.colliders=this.g.station.colliders.filter(x=>x!==c.collider);
@@ -560,7 +591,9 @@ export class CustomerSystem {
         continue;
       }
       if (c.collider) Object.assign(c.collider,{x0:c.group.position.x-.20,x1:c.group.position.x+.20,z0:c.group.position.z-.20,z1:c.group.position.z+.20});
+      if(this.updateTransfer(c,dt))continue;
       this._vox(c, dt);
+      if(c.state==='counter'&&c.current===this.idleFor(c)&&(c.waitT||0)>(c.nextGesture||8)){c.nextGesture=c.waitT+14+(c.id.charCodeAt(1)%5);this.play(c,'NC_Check_Watch',.25);}
       if (!c.path.length) continue;
       const target = c.path[0];
       const dx = target.x - c.group.position.x, dz = target.z - c.group.position.z;

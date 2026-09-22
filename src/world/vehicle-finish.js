@@ -22,6 +22,7 @@ export function finishVehicle(body,host,dims,key){
     if(name.includes('rubber')||name.includes('dark'))m.color.setHex(0x626b63);
     m.needsUpdate=true;
   }});
+  let rigged=false;body.traverse(o=>{if(o.name.startsWith('NC_Door_'))rigged=true;});
   const [length,width,height]=dims;
   const metal=surface('assets/tex/nc/MAP_metal.png',{color:0x727d75});
   const dark=surface('assets/tex/nc/fabric_detail.png',{color:0x293b35});
@@ -29,7 +30,7 @@ export function finishVehicle(body,host,dims,key){
   const add=(name,size,pos,mat)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(...size),mat);o.name=name;o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;host.add(o);return o;};
   for(const s of [-1,1]){
     add('side_rub_strip',[.025,.065,length*.65],[s*width*.493,height*.31,0],dark);
-    add('door_handle',[.025,.035,.15],[s*width*.495,height*.48,length*.17],metal);
+    if(!rigged)add('door_handle',[.025,.035,.15],[s*width*.495,height*.48,length*.17],metal);
   }
   add('front_grille',[width*.39,.15,.027],[0,.54,length*.491],dark);
   for(let i=-3;i<=3;i++)add('grille_slats',[width*.36,.009,.015],[0,.49+i*.022,length*.497],metal);

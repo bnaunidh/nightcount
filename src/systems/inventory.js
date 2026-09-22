@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { settings } from '../core/settings.js';
 import { inputBus } from '../core/input.js';
 import { fillStockBox } from '../world/additions.js';
 import { model, fitHeight } from '../core/assets.js';
@@ -48,7 +49,7 @@ export class Inventory {
       if(kind==='broom'||kind==='mop')o.position.set(.32,-.85,-.65);
       if(kind==='shotgun'){o.rotation.set(.08,-.10,0);o.position.set(.19,-.23,-.48);o.traverse(m=>{if(!m.isMesh)return;const held=mat=>new THREE.MeshBasicMaterial({map:mat.map,color:mat.color.clone().multiplyScalar(.65),side:mat.side});m.material=Array.isArray(m.material)?m.material.map(held):held(m.material);});}
       if(!this.slots.includes(item))return null;
-      item.object=o;item.ready=true;this.g.camera.add(o);
+      item.object=o;item.ready=true;item.mount=new THREE.Group();item.mount.name='carry_motion_'+kind;item.mount.add(o);this.g.camera.add(item.mount);item.raise=1;
       if(source){
         source.visible=false;
         item.colliders=this.g.station.colliders.filter(c=>c.label==='prop:'+source.name);
@@ -64,6 +65,7 @@ export class Inventory {
   }
   equip(slot){
     if(slot>=0&&!this.slots[slot]){this.g.ui.toast('Empty inventory slot.');return;}
+    if(this.selected!==slot&&this.slots[slot])this.slots[slot].raise=1;
     this.selected=slot;
     if(this.g.torch&&!this.equipped('torch')){this.g.torch.on=false;this.g.torch._killGeneration++;}
     this.sync();
@@ -77,7 +79,7 @@ export class Inventory {
   }
   remove(kind){
     const slot=this.slots.findIndex(i=>i?.kind===kind);if(slot<0)return;
-    const item=this.slots[slot];item.object?.removeFromParent();
+    const item=this.slots[slot];item.mount?.removeFromParent();item.object?.removeFromParent();
     if(item.source){item.source.visible=true;for(const c of item.colliders||[])if(!this.g.station.colliders.includes(c))this.g.station.colliders.push(c);}
     this.slots[slot]=null;if(this.selected===slot)this.selected=-1;this.sync();
     item.onReturn?.();
@@ -125,6 +127,20 @@ export class Inventory {
     this.remove(item.kind);this.g.ui.toast(`${item.label} returned to its original spot.`);return true;
   }
   clearChores(){for(const item of [...this.slots])if(item&&!item.persistent)this.remove(item.kind);this.equip(-1);}
+  stroke(){this.strokeTime=.6;}
+  update(dt){
+    this.motionTime=(this.motionTime||0)+dt;
+    this.strokeTime=Math.max(0,(this.strokeTime||0)-dt);
+    const speed=Math.min(3.6,this.g.player.vel.length()),comfort=Math.max(0,Math.min(1,settings.shake));
+    for(const item of this.slots){
+      if(!item?.mount)continue;
+      item.raise=Math.max(0,(item.raise||0)-dt*3.2);
+      const active=this.equipped(item.kind),phase=this.motionTime*(speed>2?10:6);
+      const stroke=active&&(item.kind==='mop'||item.kind==='broom')?Math.sin(this.strokeTime/.6*Math.PI):0;
+      item.mount.position.set(Math.sin(phase)*speed*.003*comfort,-item.raise*.24+Math.cos(phase*2)*speed*.002*comfort,-stroke*.20);
+      item.mount.rotation.set(item.raise*.15-stroke*.14,0,Math.sin(phase)*speed*.004*comfort);
+    }
+  }
   render(){
     this.node.replaceChildren();
     const row=document.createElement('div');row.className='inventory-slots';

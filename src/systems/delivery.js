@@ -47,7 +47,7 @@ export class Delivery {
     this.snack=await model('product_jerky_pouch',{shadows:true});fitHeight(this.snack,.18);this.snack.name='delivery_driver_snack';this.snack.position.set(8.25,.96,2.2);this.snack.visible=false;g.scene.add(this.snack);
     this.snackSign=sign(g.scene,"DRIVER'S SNACK",.46,.12,[7.13,1.15,2.2]);this.snackSign.rotation.y=-Math.PI/2;this.snackSign.visible=false;
     g.interact.add({id:'delivery_driver',pos:()=>this.driver?.group.position.clone().setY(1.30),radius:2.7,aimCos:.85,label:'the delivery driver',verb:()=>this.phase==='offer'?'Offer a snack to':'Talk to',priority:1,
-      enabled:()=>this.ready&&!!this.driver&&['cargo','offer','snack'].includes(this.phase),onUse:()=>g.customers.talk(this.driver)});
+      enabled:()=>this.ready&&!!this.driver&&!this.driver.carTransfer&&['cargo','offer','snack'].includes(this.phase),onUse:()=>g.customers.talk(this.driver)});
     g.interact.add({id:'delivery_snack',pos:()=>this.snack.position.clone().add(new THREE.Vector3(0,.08,0)),radius:2.3,aimCos:.82,label:"the driver's snack",verb:'Take',priority:2,
       enabled:()=>this.active&&this.phase==='snack',onUse:()=>this.takeSnack()});
     g.interact.add({id:'delivery_body',pos:()=>this.bodyPoint?.clone(),radius:2.6,aimCos:.80,label:'the delivery driver',verb:'Check',priority:2,
@@ -79,7 +79,7 @@ export class Delivery {
   }
   makeBody(){
     const g=this.g,c=this.driver;if(!c)return;
-    this.vehicle?.dispose();this.g.audio.silenceTruckTraffic();this.ready=false;this.cases=[];
+    c.carTransfer=null;this.vehicle?.dispose();this.g.audio.silenceTruckTraffic();this.ready=false;this.cases=[];
     g.station.colliders=g.station.colliders.filter(x=>x!==c.collider&&x!==this.bodyCollider);c.collider=null;c.path=[];c.state='dead';c.group.visible=true;
     // Bake a stable pose so this scripted discovery restores identically from a save.
     c.mixer?.stopAllAction();
@@ -102,7 +102,7 @@ export class Delivery {
     if(!this.blood)this.blood=g.station._bloodDecal(.55,.40,this.bodyPoint.x,.022,this.bodyPoint.z,0,'blood_small_pool');this.blood.visible=true;
   }
   driverShot(){
-    this.vehicle?.dispose();this.g.audio.silenceTruckTraffic();this.ready=false;this.cases=[];
+    if(this.driver)this.driver.carTransfer=null;this.vehicle?.dispose();this.g.audio.silenceTruckTraffic();this.ready=false;this.cases=[];
     this.phase='found';this.g.tasks.done('delivery');this.g.state.flag('delivery_complete_n1',true);
     this.snack.visible=false;this.snackSign.visible=false;
     this.bodyPoint=this.driver.group.position.clone().setY(.3);
@@ -203,7 +203,7 @@ export class Delivery {
       const e=await model('crate1',{shadows:true});fitWidth(e,.42);e.position.copy(c.position);e.visible=this.loaded[i];v.group.add(e);this.returned.push(e);
       this.stacks[i].visible=this.received[i];this.empties[i].visible=!this.loaded[i];
     }
-    const parked=()=>{if(token!==this.generation||v.dead)return;this.ready=true;this.showDriver();v.workLight.intensity=6;g.audio.play('veh_truck_airbrake',{vol:.55,pos:bay.pos});g.ui.toast('Delivery truck is parked to the right of the station. Take its two stock cases to STOCK RECEIVING in the stockroom.');this.refresh();};
+    const parked=()=>{if(token!==this.generation||v.dead)return;this.ready=true;this.showDriver();if(this.driver&&!this.driver.dead){const c=this.driver;c.vehicle=v;g.customers.transferCar(c,false,()=>{if(token!==this.generation||c.dead)return;g.customers.walk(c,[[10,-8.4]],()=>{c.state='counter';c.group.rotation.y=-.55;g.customers.play(c,'NC_Greet');});});}v.workLight.intensity=6;g.audio.play('veh_truck_airbrake',{vol:.55,pos:bay.pos});g.ui.toast('Delivery truck is parked to the right of the station. Take its two stock cases to STOCK RECEIVING in the stockroom.');this.refresh();};
     v.onParked=parked;if(v.state==='WAITING')parked();
     this.syncEmptyCollider();
     g.ui.toast('A supply truck is pulling in. It will wait beside the station.');

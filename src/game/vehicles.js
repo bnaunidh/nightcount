@@ -16,6 +16,7 @@
 // be aborted straight to DISPOSING, because a night can end, the power can
 // fail, or the player can load a save at any point during a 20-second approach.
 import * as THREE from "three";
+import {VehicleMotion} from "./vehicle-motion.js";
 import {finishVehicle} from "../world/vehicle-finish.js";
 import { VEHICLE_DIMENSIONS } from "../core/variants.js";
 import { model } from "../core/assets.js";
@@ -166,8 +167,8 @@ export class Vehicle {
     this.group.add(v);
     finishVehicle(v,this.group,want,v.userData.assetVariant||key);
 
+    this.motion = new VehicleMotion(this);
     this._makeLights(key, want);
-    this._findWheels(v);
 
     this.path = this.opts.path || routeTo(this.bay, this.opts.fromEast ?? (this.bay.pos.x >= 0));
     this.group.position.copy(this.path[0]);
@@ -236,6 +237,7 @@ export class Vehicle {
   update(dt) {
     if (this.dead || this.state === S.DONE) return;
     this.t += dt;
+    this.frameDt = dt;
     const st = this.state;
 
     if (st === S.APPROACH_FAR || st === S.APPROACH_NEAR || st === S.TURN_IN ||
@@ -289,7 +291,7 @@ export class Vehicle {
       }
       case S.SETTLING:
         // the nose dips and recovers — the tell that it actually stopped
-        this.body.rotation.x = Math.max(0, 0.035 * (1 - this.t / 0.8)) * Math.sin(this.t * 9);
+        // Suspension is animated on the body mount, independently of the wheels.
         // ...and if it is a semi, the brakes let go, which is the loudest
         // thing that happens on the forecourt all night. The sound existed
         // from the first asset pass and had never been played: it belonged to
@@ -343,11 +345,7 @@ export class Vehicle {
       this.engine.rate = want;
       this._engineUpdate();
     }
-    // wheels
-    if (this.wheels && this.wheels.length && this.speed > 0.01) {
-      const spin = (this.speed * dt) / 0.34;
-      for (const w of this.wheels) w.rotation.x -= spin;
-    }
+    this.motion?.update(dt);
   }
 
   _drive(dt) {
@@ -370,18 +368,13 @@ export class Vehicle {
     while (diff < -Math.PI) diff += Math.PI * 2;
     const maxTurn = dt * (1.1 + this.speed * 0.06);
     this.group.rotation.y += THREE.MathUtils.clamp(diff, -maxTurn, maxTurn);
-    // front wheels steer where the model exposes them
-    if (this.wheels) {
-      for (const w of this.wheels) {
-        if (/front/i.test(w.name)) w.rotation.y = THREE.MathUtils.clamp(diff, -0.5, 0.5);
-      }
-    }
+    this.turnDemand = diff;
   }
 
   _target(v) {
     const rate = v < this.speed ? TUNE.decel : TUNE.accel;
-    const dt = 1 / 60;
-    this.speed += THREE.MathUtils.clamp(v - this.speed, -rate * dt * 4, rate * dt * 4);
+    const dt = this.frameDt || 1 / 60;
+    this.speed += THREE.MathUtils.clamp(v - this.speed, -rate * dt, rate * dt);
   }
 
   _distanceToLeg(i) {
@@ -478,6 +471,7 @@ export class Vehicle {
   /** The occupant is out and gone; leave when the story says so. */
   depart() {
     if (this.dead || this.state === S.DISPOSING || this.state === S.DONE) return;
+    this.motion?.door(false);
     this._set(S.DEPARTING);
   }
 
@@ -526,7 +520,10 @@ export class VehicleDirector {
   async arrive(def, bay, opts = {}) {
     const v = new Vehicle(this, def, bay, opts);
     this.list.push(v);
-    const parked = new Promise((res) => { v.onParked = () => res(v); });
+    const parked = new Promise((res) => {
+      v.onParked = () => res(v);
+      const gone=v.onGone;v.onGone=()=>{res(v);gone?.(v);};
+    });
     await v.spawn();
     if (v.dead) return v;
     // shadow budget: at most one vehicle casts, and never on low

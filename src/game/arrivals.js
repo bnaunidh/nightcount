@@ -82,15 +82,15 @@ export function serveArrival(g, id, opts = {}) {
       try {
         const line = (opts.lines || def.lines || [])[0];
         if (line) g.ui.say(line, { who: cap(def.name), secs: 4 });
-        g.customers.play(c, "Idle_Talking_Loop", 0.3);
+        g.customers.play(c, "NC_Greet", 0.2);
         setTimeout(() => {
           if (c.state === "counter" && !done) {
             g.customers.play(c, c.actions.NC_Hand_Over ? "NC_Hand_Over" : "Interact", 0.2);
           }
-        }, 900);
+        }, 2100);
         setTimeout(() => {
           if (c.state === "counter" && !done) g.customers.play(c, "Idle_Loop", 0.4);
-        }, 2500);
+        }, 3800);
         g.ui.toast("Order ready. Use the register to ring up their items; they will wait for you.");
         opts.onCounter?.(c);
       } catch (e) {

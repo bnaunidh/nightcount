@@ -4,7 +4,7 @@ A 1997 gas-station horror game. Six night shifts on a desert road: clock in,
 mop, restock, read the pumps, serve whoever stops, lock up. Something is wrong
 with the station, and it gets worse each night.
 
-**▶ Play it: https://bnaunidh.github.io/chatgptnightcount/**
+**▶ Play it: https://bnaunidh.github.io/nightcount/**
 
 Runs in the browser. No install, no plugins, nothing to sign in to. Give it a
 moment on first load — it streams about 45 MB of models and textures before the
@@ -20,7 +20,7 @@ shift starts, and caches them afterwards.
 | `E` | interact |
 | `F` | equip / toggle the flashlight |
 | `Q` | notebook |
-| `1` `2` `3` | equip an inventory slot (`2` is the cellphone) |
+| `1` `2` `3` `4` | equip an inventory slot (`1` flashlight, `2` cellphone) |
 | `0` | stow the held item |
 | `G` | put the held item back where it came from |
 | `Tab` | task list |
@@ -38,9 +38,9 @@ driver afterwards, then look toward the road.
 ## What this is
 
 This edition was built by ChatGPT on top of the original project: textured
-station and props, fifteen shelf products, ten character looks, ten vehicles,
-custom character animations, 36 sound cues, doors and signage, an inventory,
-and a scripted Night 1 encounter.
+station and props, fifteen shelf products, ten character looks, ten vehicles
+with animated doors and wheels, sixteen custom character clips, 36 sound cues,
+doors and signage, a four-slot inventory, and a scripted Night 1 encounter.
 
 Built with [three.js](https://threejs.org) (MIT). Models, textures and sound are
 CC0 or CC-BY — see `docs/ATTRIBUTION.md` for the full credit list. The game's
