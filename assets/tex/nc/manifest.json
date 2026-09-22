@@ -1,0 +1,235 @@
+{
+  "authorship": "Original procedural material textures and fictional printed labels, generated locally for THE NIGHT COUNT. No new downloads.",
+  "materials": [
+    {
+      "material": "MAP_dark",
+      "file": "MAP_dark.png",
+      "family": "rubber"
+    },
+    {
+      "material": "MAP_glass",
+      "file": "MAP_glass.png",
+      "family": "glass"
+    },
+    {
+      "material": "MAP_metal",
+      "file": "MAP_metal.png",
+      "family": "metal"
+    },
+    {
+      "material": "MAP_trim",
+      "file": "MAP_trim.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_blood_dry",
+      "file": "NC_blood_dry.png",
+      "family": "stone"
+    },
+    {
+      "material": "NC_blood_rim",
+      "file": "NC_blood_rim.png",
+      "family": "stone"
+    },
+    {
+      "material": "NC_blood_wet",
+      "file": "NC_blood_wet.png",
+      "family": "stone"
+    },
+    {
+      "material": "NC_car_chrome",
+      "file": "NC_car_chrome.png",
+      "family": "metal"
+    },
+    {
+      "material": "NC_car_dark",
+      "file": "NC_car_dark.png",
+      "family": "rubber"
+    },
+    {
+      "material": "NC_car_glass",
+      "file": "NC_car_glass.png",
+      "family": "glass"
+    },
+    {
+      "material": "NC_car_lamp",
+      "file": "NC_car_lamp.png",
+      "family": "glass"
+    },
+    {
+      "material": "NC_car_paint",
+      "file": "NC_car_paint.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_car_tail",
+      "file": "NC_car_tail.png",
+      "family": "glass"
+    },
+    {
+      "material": "NC_car_tyre",
+      "file": "NC_car_tyre.png",
+      "family": "rubber"
+    },
+    {
+      "material": "NC_floor_mat",
+      "file": "NC_floor_mat.png",
+      "family": "stone"
+    },
+    {
+      "material": "NC_p_amber",
+      "file": "NC_p_amber.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_blue",
+      "file": "NC_p_blue.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_card",
+      "file": "NC_p_card.png",
+      "family": "paper"
+    },
+    {
+      "material": "NC_p_conc",
+      "file": "NC_p_conc.png",
+      "family": "stone"
+    },
+    {
+      "material": "NC_p_dark",
+      "file": "NC_p_dark.png",
+      "family": "rubber"
+    },
+    {
+      "material": "NC_p_glass",
+      "file": "NC_p_glass.png",
+      "family": "glass"
+    },
+    {
+      "material": "NC_p_green",
+      "file": "NC_p_green.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_grey",
+      "file": "NC_p_grey.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_lamp",
+      "file": "NC_p_lamp.png",
+      "family": "glass"
+    },
+    {
+      "material": "NC_p_orange",
+      "file": "NC_p_orange.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_pale",
+      "file": "NC_p_pale.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_paper",
+      "file": "NC_p_paper.png",
+      "family": "paper"
+    },
+    {
+      "material": "NC_p_red",
+      "file": "NC_p_red.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_rubber",
+      "file": "NC_p_rubber.png",
+      "family": "rubber"
+    },
+    {
+      "material": "NC_p_rust",
+      "file": "NC_p_rust.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_sage",
+      "file": "NC_p_sage.png",
+      "family": "fabric"
+    },
+    {
+      "material": "NC_p_steel",
+      "file": "NC_p_steel.png",
+      "family": "metal"
+    },
+    {
+      "material": "NC_p_stone",
+      "file": "NC_p_stone.png",
+      "family": "stone"
+    },
+    {
+      "material": "NC_p_tarp",
+      "file": "NC_p_tarp.png",
+      "family": "fabric"
+    },
+    {
+      "material": "NC_p_white",
+      "file": "NC_p_white.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_p_wood",
+      "file": "NC_p_wood.png",
+      "family": "wood"
+    },
+    {
+      "material": "NC_p_yellow",
+      "file": "NC_p_yellow.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_pump_amber",
+      "file": "NC_pump_amber.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_pump_dark",
+      "file": "NC_pump_dark.png",
+      "family": "rubber"
+    },
+    {
+      "material": "NC_pump_enamel",
+      "file": "NC_pump_enamel.png",
+      "family": "paint"
+    },
+    {
+      "material": "NC_pump_glass",
+      "file": "NC_pump_glass.png",
+      "family": "glass"
+    },
+    {
+      "material": "NC_pump_steel",
+      "file": "NC_pump_steel.png",
+      "family": "metal"
+    }
+  ],
+  "labels": [
+    "cans",
+    "sodacan",
+    "oiltin",
+    "cigpack",
+    "longlife",
+    "gallon",
+    "cleaner",
+    "cleaner2",
+    "bleach",
+    "chips",
+    "snack",
+    "cardbox",
+    "wetfloor",
+    "extinguisher",
+    "payphone",
+    "powerbox",
+    "flashlight"
+  ],
+  "resolution": "256 px materials; 512 px labels"
+}

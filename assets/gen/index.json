@@ -1,0 +1,23 @@
+{
+ "boot_plate": "assets/gen/boot_plate.jpg",
+ "meridian_logo": "assets/gen/meridian_logo.jpg",
+ "sign_face": "assets/gen/sign_face.jpg",
+ "snack_labels": "assets/gen/snack_labels.jpg",
+ "soda_labels": "assets/gen/soda_labels.jpg",
+ "notice_blank": "assets/gen/notice_blank.jpg",
+ "missing_poster": "assets/gen/missing_poster.jpg",
+ "oil_stain": "assets/gen/oil_stain.jpg",
+ "cig_pack_face": "assets/gen/cig_pack_face.jpg",
+ "station_photo": "assets/gen/station_photo.jpg",
+ "port_gil": "assets/gen/port_gil.jpg",
+ "port_trucker": "assets/gen/port_trucker.jpg",
+ "port_woman": "assets/gen/port_woman.jpg",
+ "port_hauler": "assets/gen/port_hauler.jpg",
+ "port_salesman": "assets/gen/port_salesman.jpg",
+ "port_truckman": "assets/gen/port_truckman.jpg",
+ "port_burned": "assets/gen/port_burned.jpg",
+ "port_girl": "assets/gen/port_girl.jpg",
+ "port_danny": "assets/gen/port_danny.jpg",
+ "port_attendant": "assets/gen/port_attendant.jpg",
+ "port_radio": "assets/gen/port_radio.jpg"
+}

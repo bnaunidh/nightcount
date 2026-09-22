@@ -1,0 +1,98 @@
+{
+  "sources": [
+    "https://opengameart.org/content/voice-clip-pack-male-adventurer-rpg",
+    "https://opengameart.org/content/voice-clip-packs-for-visual-novels-and-rpgs"
+  ],
+  "clips": [
+    {
+      "id": "male_hello",
+      "file": "assets/audio/human/male_hello.wav",
+      "seconds": 0.5652834467120181,
+      "actor": "Brandon Song",
+      "license": "CC0",
+      "source_file": "RPG Male Adventurer/greet0.wav",
+      "source_sha256": "34b931ceef4055ba5ff776d6c819caa947c66dd914a826047e9eda0569c45518"
+    },
+    {
+      "id": "male_yes",
+      "file": "assets/audio/human/male_yes.wav",
+      "seconds": 0.702312925170068,
+      "actor": "Brandon Song",
+      "license": "CC0",
+      "source_file": "RPG Male Adventurer/yes0.wav",
+      "source_sha256": "cce4e7a43ab9bd5e34d58f568e21e724d8aee6d058d6e3d3372079e3fcc2c113"
+    },
+    {
+      "id": "male_no",
+      "file": "assets/audio/human/male_no.wav",
+      "seconds": 0.5738548752834467,
+      "actor": "Brandon Song",
+      "license": "CC0",
+      "source_file": "RPG Male Adventurer/no0.wav",
+      "source_sha256": "00df0d132ae95f99b7589f8d8176d0f2d85e0e4330bf4b6b6780c69e8206e8da"
+    },
+    {
+      "id": "male_hurt",
+      "file": "assets/audio/human/male_hurt.wav",
+      "seconds": 0.9693877551020408,
+      "actor": "Brandon Song",
+      "license": "CC0",
+      "source_file": "RPG Male Adventurer/hurt1.wav",
+      "source_sha256": "53b3b3a7be3399f90915c813ef356a624bf3033382aea0a24eaf02c200225e75"
+    },
+    {
+      "id": "male_cry",
+      "file": "assets/audio/human/male_cry.wav",
+      "seconds": 2.8784807256235827,
+      "actor": "Brandon Song",
+      "license": "CC0",
+      "source_file": "RPG Male Adventurer/death0.wav",
+      "source_sha256": "a075132b2ad2b7f497fca18fb1bb1fb9a5bd6f75825826abeb3ff6a56d3daf52"
+    },
+    {
+      "id": "female_hello",
+      "file": "assets/audio/human/female_hello.wav",
+      "seconds": 0.9236875,
+      "actor": "cicifyre",
+      "license": "CC0",
+      "source_file": "Free Voice Clips Pack - Mature Female/greetings/hello.wav",
+      "source_sha256": "b56b3c1a1e9457e6305cc81075540fcfc4c3825caa9f597c018136a6de1f38e7"
+    },
+    {
+      "id": "female_evening",
+      "file": "assets/audio/human/female_evening.wav",
+      "seconds": 1.0263125,
+      "actor": "cicifyre",
+      "license": "CC0",
+      "source_file": "Free Voice Clips Pack - Mature Female/greetings/good_evening.wav",
+      "source_sha256": "c62aa93d916f8ce1988d70698340007212446b107fdab49565f8d764138a6275"
+    },
+    {
+      "id": "female_thanks",
+      "file": "assets/audio/human/female_thanks.wav",
+      "seconds": 0.9878333333333333,
+      "actor": "cicifyre",
+      "license": "CC0",
+      "source_file": "Free Voice Clips Pack - Mature Female/short_replies/thanks_normal.wav",
+      "source_sha256": "5b627b05f79992a3e9c5e88623f8182a9e50debf53dde1ce590cea08a601888e"
+    },
+    {
+      "id": "female_goodbye",
+      "file": "assets/audio/human/female_goodbye.wav",
+      "seconds": 1.0263125,
+      "actor": "cicifyre",
+      "license": "CC0",
+      "source_file": "Free Voice Clips Pack - Mature Female/greetings/goodbye.wav",
+      "source_sha256": "4f0fc07097ffe05992d3dd1fc9af9d25a6adec41a708602f82638228ca9a741a"
+    },
+    {
+      "id": "female_gasp",
+      "file": "assets/audio/human/female_gasp.wav",
+      "seconds": 0.8467083333333333,
+      "actor": "cicifyre",
+      "license": "CC0",
+      "source_file": "Free Voice Clips Pack - Mature Female/noises/gasp1.wav",
+      "source_sha256": "e20bd1754a0e1a4cd5ad18cdf58e0b0ad5c6618cb9a9a6049ed992791184f47b"
+    }
+  ]
+}

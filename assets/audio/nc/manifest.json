@@ -1,0 +1,744 @@
+{
+  "title": "THE NIGHT COUNT \u2014 recorded sound design pack",
+  "sample_rate": 48000,
+  "format": "16-bit PCM WAV; MP3 audition copies",
+  "audio_count": 36,
+  "synthesis": false,
+  "status": "Integrated into the separate playable preview",
+  "cues": [
+    {
+      "id": "fluorescent_steady",
+      "category": "Ambience",
+      "description": "Steady shop-light ballast, without switch-on clatter",
+      "file": "assets/audio/nc/fluorescent_steady.wav",
+      "duration": 12.0,
+      "channels": 2,
+      "loop": true,
+      "replace_slot": "amb_fluorescent",
+      "sources": [
+        "amb_fluorescent"
+      ],
+      "processing": {
+        "source_start": 31.5,
+        "crossfade_seconds": 0.6,
+        "highpass": 70,
+        "lowpass": 4800
+      },
+      "recommended_gain": 1,
+      "sha256": "b544d7830b90f94e3158d043ab33d95c490bd101e47aa7e7da041842fb4b8161"
+    },
+    {
+      "id": "cooler_compressor",
+      "category": "Ambience",
+      "description": "Low cooler motor with space left for dialogue",
+      "file": "assets/audio/nc/cooler_compressor.wav",
+      "duration": 8.0,
+      "channels": 2,
+      "loop": true,
+      "replace_slot": "amb_fridge",
+      "sources": [
+        "amb_fridge"
+      ],
+      "processing": {
+        "source_start": 3.0,
+        "crossfade_seconds": 0.6,
+        "highpass": 35,
+        "lowpass": 3200
+      },
+      "recommended_gain": 1,
+      "sha256": "60f4e11e97ceb225453f0e28d84e435593dac5a26f3650a2e313c3bc3ed9c7f1"
+    },
+    {
+      "id": "cctv_monitor_hiss",
+      "category": "Ambience",
+      "description": "Soft analog-monitor hiss for the security desk",
+      "file": "assets/audio/nc/cctv_monitor_hiss.wav",
+      "duration": 8.0,
+      "channels": 2,
+      "loop": true,
+      "replace_slot": "amb_crt",
+      "sources": [
+        "amb_crt"
+      ],
+      "processing": {
+        "source_start": 1.5,
+        "crossfade_seconds": 0.6,
+        "highpass": 180,
+        "lowpass": 6200
+      },
+      "recommended_gain": 1,
+      "sha256": "51be4ea80573c34c00864fbd86de1edb303bdaa9ba02904f37bca72ebf1e782c"
+    },
+    {
+      "id": "forecourt_neon",
+      "category": "Ambience",
+      "description": "Close sign buzz with less piercing high end",
+      "file": "assets/audio/nc/forecourt_neon.wav",
+      "duration": 12.0,
+      "channels": 2,
+      "loop": true,
+      "replace_slot": "amb_neon",
+      "sources": [
+        "amb_neon"
+      ],
+      "processing": {
+        "source_start": 33.0,
+        "crossfade_seconds": 0.6,
+        "highpass": 75,
+        "lowpass": 3800
+      },
+      "recommended_gain": 1,
+      "sha256": "3c61de8b47c2ebb5c65130a4ee3d34bd9e55c6baf62d2db2bbf6560312b3f3ac"
+    },
+    {
+      "id": "desert_after_midnight",
+      "category": "Ambience",
+      "description": "Long, gently changing wind outside Station 41",
+      "file": "assets/audio/nc/desert_after_midnight.wav",
+      "duration": 24.0,
+      "channels": 2,
+      "loop": true,
+      "replace_slot": "amb_wind_desert",
+      "sources": [
+        "amb_wind_desert"
+      ],
+      "processing": {
+        "source_start": 15.75,
+        "crossfade_seconds": 0.6,
+        "highpass": 55,
+        "lowpass": 7500
+      },
+      "recommended_gain": 1,
+      "sha256": "f776295dc830447a83bbc299c7998e9e79255893b33a37bca0e0db8feeb5d3a2"
+    },
+    {
+      "id": "highway_beyond_glass",
+      "category": "Ambience",
+      "description": "A distant road and night insects beyond the windows",
+      "file": "assets/audio/nc/highway_beyond_glass.wav",
+      "duration": 24.0,
+      "channels": 2,
+      "loop": true,
+      "replace_slot": "amb_highway",
+      "sources": [
+        "amb_highway"
+      ],
+      "processing": {
+        "source_start": 8.25,
+        "crossfade_seconds": 0.6,
+        "highpass": 100,
+        "lowpass": 5200
+      },
+      "recommended_gain": 1,
+      "sha256": "735c46982bb059423a3cc2e8a162f492a47af7d4abbae5b0699e5bb2f7dce76a"
+    },
+    {
+      "id": "door_chime",
+      "category": "Work sounds",
+      "description": "The familiar entrance bell, with a clean onset",
+      "file": "assets/audio/nc/door_chime.wav",
+      "duration": 0.92,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_doorchime",
+      "sources": [
+        "int_doorchime"
+      ],
+      "processing": {
+        "source_start": 0.06,
+        "highpass": 120,
+        "lowpass": 9000,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "a3d59d4f5045816e13fa53e797ef55502f120e1c4c13e67a91666f1c3be6c0c0"
+    },
+    {
+      "id": "timeclock_punch",
+      "category": "Work sounds",
+      "description": "Card feed, mechanical punch and return click",
+      "file": "assets/audio/nc/timeclock_punch.wav",
+      "duration": 0.8,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_punchcard",
+      "sources": [
+        "int_paper_handle",
+        "int_lock",
+        "int_regkey"
+      ],
+      "processing": "Layered recorded paper and mechanical transients; replaces unrelated 508-second take",
+      "recommended_gain": 1,
+      "sha256": "acdfcbb90606a3908823403605681a323f79da5df58988aa2949f5e5f3206cfa"
+    },
+    {
+      "id": "cash_drawer",
+      "category": "Work sounds",
+      "description": "One register drawer action, with its bell and tail",
+      "file": "assets/audio/nc/cash_drawer.wav",
+      "duration": 1.45,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_drawer",
+      "sources": [
+        "int_drawer"
+      ],
+      "processing": {
+        "source_start": 26.45,
+        "highpass": 90,
+        "lowpass": 8500,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "932bfd7c9e73f322cfb8cadb821a55919e8094aa938a101cb9b3b02b9f4093df"
+    },
+    {
+      "id": "change_on_counter",
+      "category": "Work sounds",
+      "description": "A small cluster of coins rather than a long handling take",
+      "file": "assets/audio/nc/change_on_counter.wav",
+      "duration": 0.85,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_coins",
+      "sources": [
+        "int_coins"
+      ],
+      "processing": {
+        "source_start": 5.00342,
+        "highpass": 220,
+        "lowpass": 8500,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "805d6ce107a8928bd1ae08de5e7e5c7e0a1cc9fa8b8f23b21832df5514609272"
+    },
+    {
+      "id": "stock_box",
+      "category": "Work sounds",
+      "description": "Cardboard flex and scrape when restocking",
+      "file": "assets/audio/nc/stock_box.wav",
+      "duration": 1.1,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_box_cardboard",
+      "sources": [
+        "int_box_cardboard"
+      ],
+      "processing": {
+        "source_start": 1.36,
+        "highpass": 100,
+        "lowpass": 7000,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "76fd523c8eaa5f09bfc2e70a987ba13620d9343cff3a5090c004a5393608037b"
+    },
+    {
+      "id": "can_on_shelf",
+      "category": "Work sounds",
+      "description": "One small metal contact for a shelf placement",
+      "file": "assets/audio/nc/can_on_shelf.wav",
+      "duration": 0.55,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_can",
+      "sources": [
+        "int_can"
+      ],
+      "processing": {
+        "source_start": 12.605,
+        "highpass": 130,
+        "lowpass": 8500,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "0c64b78dcc934224e9ca87632171893f95e0894a6d0302c54d4ced278f963afa"
+    },
+    {
+      "id": "receipt_feed",
+      "category": "Work sounds",
+      "description": "A short receipt-printer motor and paper-feed cue",
+      "file": "assets/audio/nc/receipt_feed.wav",
+      "duration": 1.6,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_paper_receipt",
+      "sources": [
+        "int_paper_receipt"
+      ],
+      "processing": {
+        "source_start": 7.115,
+        "highpass": 150,
+        "lowpass": 6500,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "1268c2f7ff1befee0e840af35b2214c4860099cca78d92d93f8d2eb49cab3243"
+    },
+    {
+      "id": "payphone_handset",
+      "category": "Work sounds",
+      "description": "A close receiver clack for a payphone pickup",
+      "file": "assets/audio/nc/payphone_handset.wav",
+      "duration": 0.72,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_phone_pickup",
+      "sources": [
+        "int_phone_pickup"
+      ],
+      "processing": {
+        "source_start": 3.245,
+        "highpass": 150,
+        "lowpass": 6500,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "96ff65397267267e871d64f7a8e44ba489d9320b2e6f244a0ddace7a65cf4874"
+    },
+    {
+      "id": "door_lock",
+      "category": "Work sounds",
+      "description": "A compact mechanical latch and key turn",
+      "file": "assets/audio/nc/door_lock.wav",
+      "duration": 0.55,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_lock",
+      "sources": [
+        "int_lock"
+      ],
+      "processing": {
+        "source_start": 33.3899,
+        "highpass": 90,
+        "lowpass": 7000,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "dea3a502d20fe588c3750e03f6e490a0be0bef96f3358a842ebfdfd12c62c733"
+    },
+    {
+      "id": "pump_nozzle",
+      "category": "Work sounds",
+      "description": "Nozzle handling trimmed to a usable interaction",
+      "file": "assets/audio/nc/pump_nozzle.wav",
+      "duration": 1.15,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_pump_nozzle",
+      "sources": [
+        "int_pump_nozzle"
+      ],
+      "processing": {
+        "source_start": 38.755,
+        "highpass": 95,
+        "lowpass": 8500,
+        "edit": "Isolated transient with tapered edges"
+      },
+      "recommended_gain": 1,
+      "sha256": "5d0f02a0b98bc20fab9f71a232c7c02caf7a5f5c277599392ce0f150d62e112b"
+    },
+    {
+      "id": "mop_push",
+      "category": "Work sounds",
+      "description": "A wet swab sliding across the floor",
+      "file": "assets/audio/nc/mop_push.wav",
+      "duration": 1.05615,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "int_mop",
+      "sources": [
+        "mop"
+      ],
+      "processing": "Real wet swab recording; high-pass, softened tail, calibrated gain",
+      "recommended_gain": 1,
+      "sha256": "b993c0c8f68cf5d43f399ead8dea4a89c060e601e2fe59c15fb3f9566108c1c3"
+    },
+    {
+      "id": "mop_pull",
+      "category": "Work sounds",
+      "description": "A slightly longer return stroke for the mop",
+      "file": "assets/audio/nc/mop_pull.wav",
+      "duration": 1.1735,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "mop"
+      ],
+      "processing": "Same recorded swab at 90% speed; use between push strokes",
+      "recommended_gain": 1,
+      "sha256": "792665465a4e66cb81505b162e033f74abb3a42cbb72ac11147483e19c599ec7"
+    },
+    {
+      "id": "footstep_tile_01",
+      "category": "Footsteps",
+      "description": "Tile footfall 1; complete attack and tail",
+      "file": "assets/audio/nc/footstep_tile_01.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "step_lino"
+      ],
+      "processing": {
+        "source_start": 7.40044,
+        "highpass": 120,
+        "lowpass": 7200,
+        "distinct_take": 1,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "4839588ffb565a4574e1f11e6e9676ecfa51387dedb3a8901b5622f04a1d3441"
+    },
+    {
+      "id": "footstep_tile_02",
+      "category": "Footsteps",
+      "description": "Tile footfall 2; complete attack and tail",
+      "file": "assets/audio/nc/footstep_tile_02.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "step_lino"
+      ],
+      "processing": {
+        "source_start": 24.78688,
+        "highpass": 120,
+        "lowpass": 7200,
+        "distinct_take": 2,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "69cc49ed80ab1ffeb7403521c36c1d4b1657efac106dbe9e7c968d49c1cea560"
+    },
+    {
+      "id": "footstep_tile_03",
+      "category": "Footsteps",
+      "description": "Tile footfall 3; complete attack and tail",
+      "file": "assets/audio/nc/footstep_tile_03.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "step_lino"
+      ],
+      "processing": {
+        "source_start": 2.78842,
+        "highpass": 120,
+        "lowpass": 7200,
+        "distinct_take": 3,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "b405300da976466c5b3cbe614ca858c1da9e6d5239ed79b98a3ae60851a09d75"
+    },
+    {
+      "id": "footstep_tile_04",
+      "category": "Footsteps",
+      "description": "Tile footfall 4; complete attack and tail",
+      "file": "assets/audio/nc/footstep_tile_04.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "step_lino"
+      ],
+      "processing": {
+        "source_start": 2.1,
+        "highpass": 120,
+        "lowpass": 7200,
+        "distinct_take": 4,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "0794024260660ddcff2045f98f25954f1c0bdb494dfff9d84b577d76a403ea15"
+    },
+    {
+      "id": "footstep_concrete_01",
+      "category": "Footsteps",
+      "description": "Concrete footfall 1; complete attack and tail",
+      "file": "assets/audio/nc/footstep_concrete_01.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "concrete"
+      ],
+      "processing": {
+        "source_start": 23.79221,
+        "highpass": 85,
+        "lowpass": 8500,
+        "distinct_take": 1,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "85bf9042c1d5569e86330cd5d53125f6c5bb058d89de975455bb2d47b429891a"
+    },
+    {
+      "id": "footstep_concrete_02",
+      "category": "Footsteps",
+      "description": "Concrete footfall 2; complete attack and tail",
+      "file": "assets/audio/nc/footstep_concrete_02.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "concrete"
+      ],
+      "processing": {
+        "source_start": 55.275,
+        "highpass": 85,
+        "lowpass": 8500,
+        "distinct_take": 2,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "6b466ef70e0c50e06bd468449d3dc8f51b9b3674247f3e2208002455298868c3"
+    },
+    {
+      "id": "footstep_concrete_03",
+      "category": "Footsteps",
+      "description": "Concrete footfall 3; complete attack and tail",
+      "file": "assets/audio/nc/footstep_concrete_03.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "concrete"
+      ],
+      "processing": {
+        "source_start": 2.13242,
+        "highpass": 85,
+        "lowpass": 8500,
+        "distinct_take": 3,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "f385ee3efa5b8337db4614add726cf06b88246322a0c8d3bc281c30151b603c8"
+    },
+    {
+      "id": "footstep_concrete_04",
+      "category": "Footsteps",
+      "description": "Concrete footfall 4; complete attack and tail",
+      "file": "assets/audio/nc/footstep_concrete_04.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "concrete"
+      ],
+      "processing": {
+        "source_start": 31.30833,
+        "highpass": 85,
+        "lowpass": 8500,
+        "distinct_take": 4,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "7de2207a708440992a1fcc68c729f676d7cc93e78743d1a9dc44e19796ea7f33"
+    },
+    {
+      "id": "footstep_gravel_01",
+      "category": "Footsteps",
+      "description": "Gravel footfall 1; complete attack and tail",
+      "file": "assets/audio/nc/footstep_gravel_01.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "gravel"
+      ],
+      "processing": {
+        "source_start": 0.665,
+        "highpass": 140,
+        "lowpass": 8000,
+        "distinct_take": 1,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "f1cb1cab6d78a731755a08f396a76568735a7dc4d0141eab6b8fb1316d49c924"
+    },
+    {
+      "id": "footstep_gravel_02",
+      "category": "Footsteps",
+      "description": "Gravel footfall 2; complete attack and tail",
+      "file": "assets/audio/nc/footstep_gravel_02.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "gravel"
+      ],
+      "processing": {
+        "source_start": 6.045,
+        "highpass": 140,
+        "lowpass": 8000,
+        "distinct_take": 2,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "cd408069d9b678ac8088ad4daf8be22d4ec27a92e69fd130bf88505ba9e54e43"
+    },
+    {
+      "id": "footstep_gravel_03",
+      "category": "Footsteps",
+      "description": "Gravel footfall 3; complete attack and tail",
+      "file": "assets/audio/nc/footstep_gravel_03.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "gravel"
+      ],
+      "processing": {
+        "source_start": 5.00021,
+        "highpass": 140,
+        "lowpass": 8000,
+        "distinct_take": 3,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "9f9788228082a1a2b8d7894344efe1913296471e0af7830ab0fd9f1000260fd4"
+    },
+    {
+      "id": "footstep_gravel_04",
+      "category": "Footsteps",
+      "description": "Gravel footfall 4; complete attack and tail",
+      "file": "assets/audio/nc/footstep_gravel_04.wav",
+      "duration": 0.4,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "gravel"
+      ],
+      "processing": {
+        "source_start": 11.49,
+        "highpass": 140,
+        "lowpass": 8000,
+        "distinct_take": 4,
+        "note": "Tile source is barefoot/scuff Foley, per original recording"
+      },
+      "recommended_gain": 1,
+      "sha256": "9b0e4e2abe115ee52fe129c9d3ff06b11263e0e50a7515b9451e0e89d2357e94"
+    },
+    {
+      "id": "cctv_channel_change",
+      "category": "Unsettling details",
+      "description": "Relay click and restrained analog static when changing feeds",
+      "file": "assets/audio/nc/cctv_channel_change.wav",
+      "duration": 0.24,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "hor_static_burst",
+        "int_regkey"
+      ],
+      "processing": "Layered real switch/static recordings; no synthesized beep",
+      "recommended_gain": 1,
+      "sha256": "6db586f652a9515c2a0432bab1e2a0f8d6ed1b02d2a4ae5cf94081663d5f02d8"
+    },
+    {
+      "id": "wall_knock_distant",
+      "category": "Unsettling details",
+      "description": "A muffled, single wall-side disturbance",
+      "file": "assets/audio/nc/wall_knock_distant.wav",
+      "duration": 0.9,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "hor_knock",
+      "sources": [
+        "hor_knock"
+      ],
+      "processing": {
+        "source_start": 0.0,
+        "lowpass": 2500
+      },
+      "recommended_gain": 1,
+      "sha256": "22295aa82c47c2fdbc5d1c297eeea61a3bd812e57faf2ba455b058938b29e032"
+    },
+    {
+      "id": "shelf_settling",
+      "category": "Unsettling details",
+      "description": "A slow shelf strain that stays grounded in the shop",
+      "file": "assets/audio/nc/shelf_settling.wav",
+      "duration": 2.44446,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "hor_shelf_creak",
+      "sources": [
+        "hor_shelf_creak"
+      ],
+      "processing": {
+        "source_start": 10.03,
+        "speed": 0.9,
+        "lowpass": 4500
+      },
+      "recommended_gain": 1,
+      "sha256": "5d5270c49150169dc8e4669c3aa3489c2d5a765c6561f6c5f5133c7c96828ff3"
+    },
+    {
+      "id": "metal_in_backlot",
+      "category": "Unsettling details",
+      "description": "A small metal contact with two subdued outdoor reflections",
+      "file": "assets/audio/nc/metal_in_backlot.wav",
+      "duration": 1.1,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": "hor_metal_far",
+      "sources": [
+        "hor_metal_far"
+      ],
+      "processing": "Real metal impact; filtered delay copies at 130/290 ms",
+      "recommended_gain": 1,
+      "sha256": "0e11e5f2854aa72c3d5c88b0364402d414e071b49f678bb648468c6fa69ef3fc"
+    },
+    {
+      "id": "attendant_mop_cycle",
+      "category": "Unsettling details",
+      "description": "Exact 2.6-second work cycle for NC_Mop_Loop; stop it when the Attendant freezes",
+      "file": "assets/audio/nc/attendant_mop_cycle.wav",
+      "duration": 2.6,
+      "channels": 1,
+      "loop": true,
+      "replace_slot": null,
+      "sources": [
+        "mop"
+      ],
+      "processing": "Two recorded swab strokes aligned to the animation; silent edges meet exactly",
+      "recommended_gain": 1,
+      "sha256": "33b9b38b659b6839e405dacd2ebbfcd45cfb7970e42d7fddae4066be8446a4a9"
+    },
+    {
+      "id": "power_cut",
+      "category": "Unsettling details",
+      "description": "A dry breaker clack and a short dying ballast tail",
+      "file": "assets/audio/nc/power_cut.wav",
+      "duration": 0.7,
+      "channels": 1,
+      "loop": false,
+      "replace_slot": null,
+      "sources": [
+        "int_breaker",
+        "amb_fluorescent"
+      ],
+      "processing": "Mechanical recording plus faded recorded hum; then subtract ambience in the game",
+      "recommended_gain": 1,
+      "sha256": "269a98e8717abea2aa0016a25e72289b1ee5bd0314635820a739c553d22ea47e"
+    }
+  ]
+}
