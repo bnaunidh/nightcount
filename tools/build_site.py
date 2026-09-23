@@ -15,7 +15,7 @@ either edition's code names is checked against the files with EXACT case —
 macOS forgives a wrong-case path and GitHub Pages 404s it, so it has to be
 caught here, not after deploy.
 """
-import os, re, shutil, subprocess, sys, pathlib
+import os, pathlib, re, shutil, subprocess, sys
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 OUT = pathlib.Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else HERE
@@ -39,6 +39,23 @@ def dead_model_dirs(root):
     for top in ("assets/models", "assets/models_lowpoly"):
         if (root / top).is_dir() and not any(k == top or k.startswith(top + "/") for k in keep):
             dead.append(top + "/")
+    # a character source file the edition no longer loads (mine loads a .glb
+    # built in Blender from the Quaternius .gltf; ChatGPT's may still load it)
+    # — judged against every source file, not just MODEL: ChatGPT's edition
+    # loads its animation pack with a bare loadGLTF() in customers.js
+    chars = root / "assets/characters"
+    if chars.is_dir():
+        code = "".join((r / f).read_text(encoding="utf-8", errors="replace")
+                       for r, _, fs in os.walk(root / "src") for f in fs if f.endswith(".js")
+                       for r in [pathlib.Path(r)])
+        used = used | set(re.findall(r'"(assets/characters/[^"]+)"', code))
+        gltf_used = any(u.startswith("assets/characters/") and u.endswith(".gltf") for u in used)
+        for f in sorted(os.listdir(chars)):
+            p = "assets/characters/" + f
+            if f == "LICENSE" or p in used or (f.endswith(".bin") and gltf_used):
+                continue
+            if f.endswith((".gltf", ".bin", ".glb")):
+                dead.append(p)
     return dead
 
 

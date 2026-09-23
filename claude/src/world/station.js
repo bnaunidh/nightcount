@@ -589,13 +589,19 @@ export class Station {
     // They used to be drawn here as boxes: a spine, eight boards and a dark
     // bar across the end that was meant to be a price rail and read as a
     // shadow floating at the head of every aisle.
+    // Runs of 2.9 m, eight facings a side, ending a metre short of the
+    // coolers: a cross aisle along the back, the way a shop this size is
+    // actually laid out. They used to be 3.9 m and ran 0.6 m INTO the cooler
+    // case — the last three facings of every run shared their space with the
+    // drinks behind the glass.
     this.gondolas = [];
     const xs = [-1.0, 2.2, 5.4];
+    const Z0 = 3.3, Z1 = 6.2;
     for (let i = 0; i < xs.length; i++) {
       const x = xs[i];
       // one collider for the whole run, so you cannot walk through the stock
-      this.colliders.push({ x0: x - 0.5, x1: x + 0.5, z0: 3.28, z1: 7.12, label: "gondola" + i, y1: 1.6 });
-      this.gondolas.push({ x, z0: 3.3, z1: 7.1, index: i, shelfY: [0.38, 0.74, 1.10, 1.46], reach: 0.4 });
+      this.colliders.push({ x0: x - 0.5, x1: x + 0.5, z0: Z0 - 0.02, z1: Z1 + 0.02, label: "gondola" + i, y1: 1.6 });
+      this.gondolas.push({ x, z0: Z0, z1: Z1, index: i, shelfY: [0.38, 0.74, 1.10, 1.46], reach: 0.4 });
     }
     // end caps, at the head of the first two runs, facing the door
     this.endcaps = [{ x: -1.0, z: 3.0, kind: "snack" }, { x: 2.2, z: 3.0, kind: "oil" }];
@@ -629,7 +635,9 @@ export class Station {
     // Two runs and two walkways, which is also how a shop this shape is really
     // laid out. `_interiorWalls` cuts the partition at the same x values, so
     // both are derived from L.DOOR_* and cannot drift apart.
-    const z = 6.9, HALF = 0.9;         // walkway half-width at each doorway
+    // Back against the partition (its face is at 7.92), which leaves a metre
+    // of cross aisle in front of the glass.
+    const z = 7.55, HALF = 0.9;        // walkway half-width at each doorway
     const gaps = [L.DOOR_OFFICE, L.DOOR_BATH].sort((a, b) => a - b);
     const segs = [];
     let cursor = -2.2;
@@ -661,6 +669,9 @@ export class Station {
         new THREE.MeshLambertMaterial({ color: 0xbcd2d6, transparent: true, opacity: 0.22 })
       );
       glass.position.set(cx, 1.1, zFront);
+      // Kept as a handle, not drawn: props.js hangs a row of real glass doors
+      // across the front (props_rooms.py), and two panes read as fog.
+      glass.visible = false;
       this.group.add(glass);
       this.coolerGlass.push(glass);
       const glow = new THREE.Mesh(new THREE.PlaneGeometry(W - 0.3, 1.6), unlit(0xcfe6ec));
@@ -719,6 +730,23 @@ export class Station {
       }
       this.addBox(w + 0.14, 0.09, deep, M.counterTop, c, head, Z, { collide: false, label: "casing" });
     }
+    // The restroom's walls tiled to shoulder height, with a dark cap. The
+    // floor was tiled and the walls were the shop's paint, which read as a
+    // corner of the stock room with a bin in it.
+    M.tilesWall = M.tilesWall || surface(TEX.tilesWall, { repeat: [1, 1] });
+    const TH = 1.25, t = 0.012, bx0 = L.BATH_X0 + 0.08, bx1 = L.BX1 - 0.125;
+    const bz0 = L.PARTZ + 0.08, bz1 = L.BZ1 - 0.125;
+    const wain = (w, d, x, z) => {
+      this.addBox(w, TH, d, M.tilesWall, x, 0, z, { collide: false, shadow: false, label: "wainscot" });
+      this.addBox(Math.max(w, 0.03), 0.03, Math.max(d, 0.03), M.dark, x, TH, z, { collide: false, shadow: false, label: "wainscot" });
+    };
+    wain(t, bz1 - bz0, bx1 - t / 2, (bz0 + bz1) / 2);                       // east
+    wain(t, bz1 - bz0, bx0 + t / 2, (bz0 + bz1) / 2);                       // west
+    wain(bx1 - bx0, t, (bx0 + bx1) / 2, bz1 - t / 2);                       // rear
+    const dx0 = L.DOOR_BATH - 0.5, dx1 = L.DOOR_BATH + 0.5;                 // either side of the door
+    wain(dx0 - bx0, t, (bx0 + dx0) / 2, bz0 + t / 2);
+    wain(bx1 - dx1, t, (dx1 + bx1) / 2, bz0 + t / 2);
+
     // canopy soffit: a pale ceiling under the corrugated deck, and eight
     // fittings in two rows over the islands — the light the forecourt is lit by
     const cy = L.CANOPY_Y;

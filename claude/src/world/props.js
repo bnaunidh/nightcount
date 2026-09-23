@@ -197,6 +197,19 @@ export async function dressStation(scene, station) {
   }
   add("flashlight", { pos: new THREE.Vector3(-6.85, L.CNT_H, 2.62), rot: 1.2, w: 0.22 });
 
+  // ——— cooler doors: a row of glass across the front of every run ———————
+  {
+    const zFront = (station.coolerBounds?.z ?? 7.55) - 0.375;
+    for (const [sx0, sx1] of station.coolerSegments || []) {
+      const n = Math.floor((sx1 - sx0 - 0.12) / 0.74);
+      const x0 = (sx0 + sx1) / 2 - (n * 0.74) / 2 + 0.37;
+      for (let i = 0; i < n; i++) {
+        add("coolerdoor", { pos: new THREE.Vector3(x0 + i * 0.74, 0.12, zFront), rot: Math.PI,
+          name: "fixture_coolerdoor" });
+      }
+    }
+  }
+
   // ——— shop fittings (Blender: props_fixtures.py) ————————————————————
   // Placed exactly where station.js says the runs stand, so the stock laid
   // out below lands on these shelves and nowhere else.
@@ -248,7 +261,9 @@ export async function dressStation(scene, station) {
       const lineR = goods[Math.floor(R() * goods.length)];
       // one heavier hero item per shelf, at eye level only
       const heroAt = (s === 2 || s === 3) ? 2 + Math.floor(R() * 6) : -1;
-      for (let i = 0; i < 11; i++) {
+      // one facing every 35 cm from 22 cm in: 8 on a 2.9 m run
+      const facings = Math.floor((g.z1 - g.z0 - 0.30) / 0.35) + 1;
+      for (let i = 0; i < facings; i++) {
         const z = g.z0 + 0.22 + i * 0.35;
         for (const side of [-1, 1]) {
           let key = side < 0 ? lineL : lineR;
@@ -357,7 +372,8 @@ export async function dressStation(scene, station) {
   add("cardbox", { pos: new THREE.Vector3(2.6, 0, 11.6), rot: 1.1, h: 0.42, name: "prop_restockbox" });
   add("crate1", { pos: new THREE.Vector3(3.4, 0, 10.4), rot: 0.2, h: 0.3 });
   add("crate2", { pos: new THREE.Vector3(3.4, 0.3, 10.4), rot: -0.4, h: 0.3 });
-  add("pallet", { pos: new THREE.Vector3(3.1, 0, 12.55), rot: 0.08, w: 1.2, shadows: false });
+  // on the dock, not half through the rear wall and buried in the dock
+  add("pallet", { pos: new THREE.Vector3(3.1, 0.35, 12.95), rot: 0.08, w: 1.2, shadows: false });
   add("handtruck", { pos: new THREE.Vector3(4.0, 0, 12.4), rot: 2.2, h: 1.15 });
   add("ladder", { pos: new THREE.Vector3(-3.2, 0, 12.4), rot: 0.1, h: 1.9 });
   add("toolbox", { pos: new THREE.Vector3(-2.4, 0, 9.0), rot: 0.7, h: 0.22 });
@@ -376,9 +392,22 @@ export async function dressStation(scene, station) {
   // and the junction-box lid opened into the wall behind them.
   add("powerbox", { pos: new THREE.Vector3(A.breaker.x, 1.15, 11.85), rot: Math.PI, h: 0.62, name: "prop_breaker" });
   add("utilbox", { pos: new THREE.Vector3(A.breaker.x - 0.9, 1.3, 11.80), rot: Math.PI, h: 0.35 });
-  add("shelf", { pos: new THREE.Vector3(-2.2, 0, 12.5), rot: 0, h: 1.8, name: "prop_stockshelf" });
+  // The stock room has stock in it. (The old shelf stood at z 12.5 — outside
+  // the rear wall, in the lot, since the office and stock room swapped.)
+  add("stockrack_b", { pos: new THREE.Vector3(A.stock_shelf.x, 0, L.BZ1 - 0.355), rot: Math.PI, name: "prop_stockshelf" });
+  add("stockrack_a", { pos: new THREE.Vector3(L.BX0 + 0.355, 0, 10.9), rot: Math.PI / 2, name: "prop_stockrack" });
 
   // ——— bathroom ————————————————————————————————————————————————
+  // A highway restroom, fitted out. Everything stays off the rear wall's
+  // middle — Jacob stands there facing it on Night 2 — and off the floor
+  // between the door and x 7, where the figure stands on Night 4. The sink is
+  // where nights.js already plays the tap from.
+  const BW = L.BATH_X0 + 0.08, BE = L.BX1 - 0.125, BR = L.BZ1 - 0.125;
+  add("toilet", { pos: new THREE.Vector3(BW + 0.26, 0, 10.9), rot: Math.PI / 2, name: "prop_toilet" });
+  add("grabbar", { pos: new THREE.Vector3(BW + 0.75, 0.80, BR - 0.01), rot: Math.PI, name: "sign_grabbar" });
+  add("sink", { pos: new THREE.Vector3(BE - 0.21, 0, 10.6), rot: -Math.PI / 2, name: "prop_sink" });
+  add("mirror", { pos: new THREE.Vector3(BE - 0.027, 1.12, 10.6), rot: -Math.PI / 2, name: "sign_mirror" });
+  add("towels", { pos: new THREE.Vector3(BE - 0.062, 1.02, 9.75), rot: -Math.PI / 2, name: "sign_towels" });
   add("trashcan", { pos: new THREE.Vector3(8.4, 0, 9.0), rot: 0.4, h: 0.72 });
   add("cleaner", { pos: new THREE.Vector3(8.5, 0, 11.4), rot: 0.2, h: 0.24 });
 

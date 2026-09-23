@@ -421,7 +421,7 @@ const night2 = (g) => scriptShell(g, async (ctl) => {
     await g.cutscene("cs02b_bathroom", async (cs) => {
       g.station.setDoor("bath", true);
       // he is at the far wall. Facing it. Not moving.
-      await g.attendant.showAt?.(0, { stage: 2, anim: "Idle_Loop", at: V(7.2, 0, 11.4), facing: 0 });
+      await g.attendant.showAt?.(0, { stage: 2, anim: "NC_Stand_Still_Loop", at: V(7.2, 0, 11.4), facing: 0 });
       cs.say("Jacob.", { who: "", secs: 2.2 });
       await cs.wait(2.6);
       g.audio.play("amb_thunder", { vol: 0.9, scare: true });
@@ -681,7 +681,7 @@ const night3 = (g) => scriptShell(g, async (ctl) => {
     g.tasks.done("pole");
     g.audio.setState("normal", 2.0);
     // walking back: every window lit, and someone behind the counter
-    await g.attendant.showAt(3, { stage: 1, anim: "Idle_Loop" });
+    await g.attendant.showAt(3, { stage: 1, anim: "NC_Stand_Still_Loop" });
     g.power.on = { store: true, cooler: true, canopy: false, cams: true, back: true };
     g.power.apply();
     // Was a cutscene. It is a discovery — every light on, and something at his
@@ -823,8 +823,10 @@ const night3 = (g) => scriptShell(g, async (ctl) => {
         g.state.flag("n3_something_inside", true);
         g.audio.play("int_doorchime", { vol: 0.5 });
         await g.attendant.showAt?.(0, {
-          stage: 2, anim: "Idle_Loop",
-          at: new THREE.Vector3(2.2, 0, 5.4), facing: Math.PI,
+          // In aisle 2. At (2.2, 5.4) it stood inside the middle gondola, and
+          // always had — the shelving went straight through it.
+          stage: 2, anim: "NC_Stand_Still_Loop",
+          at: new THREE.Vector3(3.8, 0, 5.4), facing: Math.PI,
         });
         g.state.clue("inside_n3", "Something was standing in an aisle when I got back");
         await wait(2.6);
@@ -1228,7 +1230,7 @@ const night4 = (g) => scriptShell(g, async (ctl) => {
 
   // It is standing over her, and this time it is looking at him.
   await g.attendant.showAt(0, {
-    stage: 2, anim: "Idle_Loop", at: V(7.0, 0, 10.9), facing: Math.PI, silent: true,
+    stage: 2, anim: "NC_Stand_Still_Loop", at: V(7.0, 0, 10.9), facing: Math.PI, silent: true,
   });
   g.tasks.add({ id: "bathsalt", text: "⚠ IT IS STANDING OVER HER" });
   g.setDread(5);
@@ -2151,7 +2153,7 @@ const night6 = (g) => scriptShell(g, async (ctl) => {
     g.torch.toggle?.(true);
     g.audio.play("int_lightswitch", { vol: 0.5 });
     await g.attendant.showAt(0, {
-      stage: 3, anim: "Idle_Loop", at: V(1.2, 0, 4.2), facing: Math.PI, silent: true,
+      stage: 3, anim: "NC_Stand_Still_Loop", at: V(1.2, 0, 4.2), facing: Math.PI, silent: true,
     });
     cs.look(V(1.2, 1.6, 4.2), 1.4);
     await cs.wait(2.0);
@@ -2197,7 +2199,7 @@ const night6 = (g) => scriptShell(g, async (ctl) => {
     g.power.flickerNow?.(0.3, true);
     await g.attendant.hide();
     await g.attendant.showAt(0, {
-      stage: 3, anim: "Idle_Loop", at: V(2.6, 0, 1.4), facing: Math.PI, silent: true,
+      stage: 3, anim: "NC_Stand_Still_Loop", at: V(2.6, 0, 1.4), facing: Math.PI, silent: true,
     });
     await cs.wait(0.7);
     cs.say("NO —", { who: "", secs: 2.0 });

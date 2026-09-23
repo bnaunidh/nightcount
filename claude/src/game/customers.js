@@ -48,6 +48,9 @@ export const CAST = {
     coat: 0x2a2622, trousers: 0x24211e, skin: 0x6b5347, burned: true,
     vehicle: null,
     wants: [{ name: "Cigarettes", price: 210, model: "cigpack", h: 0.09 }],
+    // points past you at the case. He does NOT linger after: the script needs
+    // him gone, no car and no footprints, the moment he walks out.
+    ask: "NC_Point_Behind",
     tender: 500, wantsChangeForPhone: true, lines: [
       "Pack of reds. And change for the phone.",
       "I've been walking.",
@@ -82,6 +85,7 @@ export const CAST = {
     name: "the trucker", height: 1.83, build: 1.18,
     coat: 0x5a4d3c, trousers: 0x33353a, skin: 0xa9855f, cap: 0x7a2f2a,
     vehicle: "truck_semi", vehicleColor: 0x8a8f94, living: true,
+    idle: "NC_Wait_Cold_Loop",           // "Cold one out there."
     wants: [
       { name: "Coffee, large", price: 89, model: "sodacan", h: 0.16 },
       { name: "Beef jerky", price: 219, model: "chips", h: 0.16 },
@@ -97,6 +101,10 @@ export const CAST = {
     coat: 0x50607a, trousers: 0x2f3540, skin: 0xd0ae90, living: true,
     vehicle: "car_sedan", vehicleColor: 0x9aa3a8,
     wants: [{ name: "Payphone change", price: 25, model: "sodacan", h: 0.08 }],
+    idle: "NC_Wait_Cold_Loop",
+    // She bought change for the phone, so she uses it; then she waits for the
+    // tow on the island kerb by her car, the way she said she would.
+    after: "phone_then_kerb",
     tender: 100, lines: [
       "Do you have change for the phone? My tyre's gone.",
       "Tow said an hour. That was an hour ago.",
@@ -108,6 +116,7 @@ export const CAST = {
     coat: 0x3f5a3e, trousers: 0x2e3a44, skin: 0xbb9877,
     vehicle: null,
     wants: [{ name: "Cigarettes", price: 195, model: "cigpack", h: 0.09 }],
+    ask: "NC_Point_Behind",
     tender: 500, wantsChangeForPhone: true, lines: [
       "Pack of reds, and change for the phone.",
       "I'm on shift. I just need to call the manager.",
@@ -135,6 +144,13 @@ export class CustomerSystem {
       const g = await loadGLTF(MODEL.human);
       this.rig = g.scene;
       unify(this.rig, { shadows: true });
+      // A skinned mesh measures itself through its bones' world matrices and
+      // caches the result. Blender writes the body before the skeleton, so
+      // the first measurement ran on bones that had never been placed — a
+      // 0.44 m box, which fitHeight() then scaled into a six-metre man.
+      // Place the bones, then measure; every clone inherits the right box.
+      this.rig.updateMatrixWorld(true);
+      this.rig.traverse((m) => { if (m.isSkinnedMesh) m.computeBoundingBox(); });
       for (const c of g.animations) this.clips.set(c.name, c);
     } catch (e) {
       console.warn("[customers] character rig unavailable", e);
@@ -168,13 +184,21 @@ export class CustomerSystem {
       const pos = geo.attributes.position;
       if (!pos) return;
       const col = new THREE.Float32BufferAttribute(pos.count * 3, 3);
+      // hands go by the bone that moves them, not by where they sit: the rig
+      // rests in a T-pose, so a height band put every hand in the coat
+      const bones = m.skeleton?.bones || [];
+      const handBone = bones.map((b) => /hand|palm|f_|thumb/i.test(b.name));
+      const si = geo.attributes.skinIndex, sw = geo.attributes.skinWeight;
       for (let i = 0; i < pos.count; i++) {
         const yy = (pos.getY(i) - y0 / (obj.scale.y || 1)) / (h / (obj.scale.y || 1));
         let c = cCoat;
         if (yy < 0.48) c = cTrou;
         else if (yy > 0.88) c = cSkin;
-        // hands
-        if (yy > 0.5 && yy < 0.62 && Math.abs(pos.getX(i)) > 0.28) c = cSkin;
+        if (si && sw) {
+          let hand = 0;
+          for (let k = 0; k < 4; k++) if (handBone[si.getComponent(i, k)]) hand += sw.getComponent(i, k);
+          if (hand > 0.5) c = cSkin;
+        }
         col.setXYZ(i, c.r, c.g, c.b);
       }
       geo.setAttribute("color", col);
@@ -203,14 +227,13 @@ export class CustomerSystem {
       this.dress(body, def);
       group.add(body);
       mixer = new THREE.AnimationMixer(body);
-      for (const n of ["Idle_Loop", "Idle_Talking_Loop", "Walk_Loop", "Walk_Formal_Loop",
-        "Interact", "PickUp_Table", "Push_Loop", "Fixing_Kneeling", "Crouch_Idle_Loop", "Death01"]) {
-        const c = this.clip(n);
-        if (c) {
-          const a = mixer.clipAction(c);
-          a.enabled = true;
-          actions[n] = a;
-        }
+      // Every clip in the character file — the library ones and the thirteen
+      // authored for this game in Blender (char_clips.py). An action costs
+      // nothing until it plays.
+      for (const [n, c] of this.clips) {
+        const a = mixer.clipAction(c);
+        a.enabled = true;
+        actions[n] = a;
       }
       actions.Idle_Loop?.play();
     } else {
@@ -243,6 +266,14 @@ export class CustomerSystem {
   play(c, name, fade = 0.28) {
     if (!c.mixer || !c.actions[name] || c.current === name) return;
     const from = c.actions[c.current], to = c.actions[name];
+    // A performance authored in Blender that is not a _Loop is a gesture: it
+    // plays once and holds its last frame until the next clip takes over.
+    // Left looping, a sit-down that ends a tenth of a second before the
+    // sitting loop fades in stands her back up for the length of the fade.
+    if (name.startsWith("NC_") && !name.endsWith("_Loop")) {
+      to.setLoop(THREE.LoopOnce, 1);
+      to.clampWhenFinished = true;
+    }
     to.reset().play();
     if (from) { to.crossFadeFrom(from, fade, false); } else { to.fadeIn(fade); }
     c.current = name;
@@ -354,9 +385,19 @@ export class CustomerSystem {
 
   /** They take their bag and go. If `permanent`, the car leaves the road. */
   leave(c, { permanent = true } = {}) {
+    // A served customer with somewhere to be first goes there, and then leaves
+    // the ordinary way. The night does not wait on this — arrival:done has
+    // already fired — and clearAll() at the end of a shift takes them anyway.
+    if (permanent && c.def.after && !c._afterDone) {
+      c._afterDone = true;
+      return this._after(c, c.def.after, () => this.leave(c, { permanent }));
+    }
     c.state = "leaving";
     const vpos = CustomerSystem.vehiclePos(c.vehicle);
-    this.walk(c, [
+    // someone already out on the forecourt walks to their car, not back
+    // through the shop to the counter and out of the door again
+    const outside = !!c._afterDone;
+    this.walk(c, outside ? [[vpos ? vpos.x : 14, -4.0]] : [
       [L.CUSTOMER.x + 2.0, 1.0],
       [5.1, 1.0],
       [5.1, -2.4],
@@ -373,11 +414,43 @@ export class CustomerSystem {
       }
       this.g.bus.emit("customer:left", c, permanent);
     });
+    if (outside) return;
     setTimeout(() => {
       this.g.station.setDoor("entry", true);
       this.g.audio.play("int_doorchime", { vol: 0.55 });
       setTimeout(() => this.g.station.setDoor("entry", false), 2400);
     }, 2000);
+  }
+
+  /** What a customer does between paying and driving away. */
+  _after(c, kind, done) {
+    c.state = "after";
+    const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
+    const go = (pts) => new Promise((r) => this.walk(c, pts, r));
+    const bayX = c.vehicle?.bay?.pos?.x ?? CustomerSystem.vehiclePos(c.vehicle)?.x ?? 5;
+    (async () => {
+      if (kind === "phone_then_kerb") {
+        this.g.station.setDoor("entry", true);
+        setTimeout(() => this.g.station.setDoor("entry", false), 3400);
+        // out of the door to the payphone on the corner; it faces the forecourt
+        await go([[L.CUSTOMER.x + 2.0, 1.0], [5.1, 1.0], [5.1, -2.4], [8.95, -2.2]]);
+        if (c.state !== "after") return;
+        c.group.rotation.y = Math.PI / 2;
+        this.play(c, "NC_Payphone_Loop", 0.5);
+        await wait(24);
+        if (c.state !== "after") return;
+        // then down on the island kerb on her car's side, facing the shop
+        const sx = Math.sign(bayX || 1) * 1.6;
+        await go([[7.6, -3.6], [sx, -5.2], [sx, -5.82]]);
+        if (c.state !== "after") return;
+        c.group.rotation.y = 0;
+        this.play(c, "NC_Sit_Kerb_Enter", 0.35);
+        await wait(1.5);
+        this.play(c, "NC_Sit_Kerb_Loop", 0.4);
+        await wait(38);
+      }
+      if (c.state === "after") done();
+    })();
   }
 
   _driveOff(v) {

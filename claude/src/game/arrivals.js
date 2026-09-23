@@ -80,9 +80,11 @@ export function serveArrival(g, id, opts = {}) {
       try {
         const line = (opts.lines || def.lines || [])[0];
         if (line) g.ui.say(line, { who: cap(def.name), secs: 4 });
-        g.customers.play(c, "Idle_Talking_Loop", 0.3);
-        setTimeout(() => g.customers.play(c, "Interact", 0.25), 900);
-        setTimeout(() => g.customers.play(c, "Idle_Loop", 0.4), 2000);
+        // ask (a cigarette buyer points past you at the case), put the money
+        // down on the counter, then wait — each in their own way
+        g.customers.play(c, def.ask || "Idle_Talking_Loop", 0.3);
+        setTimeout(() => g.customers.play(c, "NC_Hand_Over", 0.25), def.ask ? 1700 : 900);
+        setTimeout(() => g.customers.play(c, def.idle || "Idle_Loop", 0.4), def.ask ? 3100 : 2300);
         g.ui.toast("They're waiting at the register.");
         opts.onCounter?.(c);
       } catch (e) {
@@ -116,7 +118,7 @@ export function serveArrival(g, id, opts = {}) {
       if (waited > patience * 0.45 && nagged === 0 && lines[1]) {
         nagged = 1; g.ui.say(lines[1], { who: cap(def.name), secs: 4 });
         g.customers.play(cust, "Idle_Talking_Loop", 0.3);
-        setTimeout(() => g.customers.play(cust, "Idle_Loop", 0.5), 2200);
+        setTimeout(() => g.customers.play(cust, def.idle || "Idle_Loop", 0.5), 2200);
       } else if (waited > patience * 0.78 && nagged === 1 && lines[2]) {
         nagged = 2; g.ui.say(lines[2], { who: cap(def.name), secs: 4 });
       } else if (waited > patience) {

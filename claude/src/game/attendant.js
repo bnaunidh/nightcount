@@ -12,13 +12,20 @@ import { LAYER_CAMERA_ONLY } from "../systems/cameras.js";
 import { L } from "../world/station.js";
 
 /** Where it can be found, per camera feed. */
+// Clips: NC_* are authored for this game in Blender (char_clips.py). The
+// posts were re-set for the shorter runs and the cross aisle: the aisle post
+// used to face the cooler rather than a shelf, and the back-room post stood
+// inside the office desk.
 export const POSTS = {
-  3: { pos: new THREE.Vector3(1.2, 0, 6.0), rot: 0.0, anim: "Push_Loop" },      // aisle, facing the shelf
-  4: { pos: new THREE.Vector3(3.4, 0, 6.6), rot: 0.0, anim: "Fixing_Kneeling" },// cooler alcove
-  5: { pos: new THREE.Vector3(0.4, 0, 11.4), rot: 0.3, anim: "Push_Loop" },     // stock room
-  6: { pos: new THREE.Vector3(4.2, 0, 16.4), rot: 2.6, anim: "Idle_Loop" },     // back lot
-  1: { pos: new THREE.Vector3(-2.0, 0, -12.5), rot: 0.4, anim: "Idle_Loop" },   // beyond the pumps
+  3: { pos: new THREE.Vector3(1.22, 0, 5.2), rot: Math.PI / 2, anim: "NC_Restock_Loop" },  // aisle 1, at the shelves
+  4: { pos: new THREE.Vector3(3.4, 0, 6.45), rot: 0.0, anim: "NC_Mop_Loop" },             // cross aisle, by the cooler
+  5: { pos: new THREE.Vector3(-0.9, 0, 10.9), rot: -Math.PI / 2, anim: "NC_Restock_Loop" }, // back room, at the cartons
+  6: { pos: new THREE.Vector3(4.2, 0, 16.4), rot: 2.6, anim: "NC_Stand_Still_Loop" },    // back lot
+  1: { pos: new THREE.Vector3(-2.0, 0, -12.5), rot: 0.4, anim: "NC_Stand_Still_Loop" },  // beyond the pumps
 };
+
+/** Head turn in NC_Head_Turn_Slow: 150 degrees to its left, which is +Y. */
+const HEAD_TURN = THREE.MathUtils.degToRad(150);
 
 export class Attendant {
   constructor(game) {
@@ -37,7 +44,7 @@ export class Attendant {
    * He is placed, drawn, and gone before the player can focus on him.
    */
   async flashAt(pos, secs = 0.14) {
-    await this.showAt(0, { stage: 2, anim: "Idle_Loop", at: pos, facing: Math.PI, silent: true });
+    await this.showAt(0, { stage: 2, anim: "NC_Stand_Still_Loop", at: pos, facing: Math.PI, silent: true });
     this.g.dev?.draw?.();
     await new Promise((r) => setTimeout(r, secs * 1000));
     this.hide();
@@ -79,7 +86,8 @@ export class Attendant {
       [L.CUSTOMER.x, L.CUSTOMER.z],
     ], () => {
       e.group.rotation.y = Math.PI;
-      this.g.customers.play(e, "Idle_Loop");
+      // at the counter it does not breathe
+      this.g.customers.play(e, "NC_Stand_Still_Loop");
       this.g.bus.emit("attendant:counter");
     });
     // everything else in the mix goes
@@ -116,15 +124,36 @@ export class Attendant {
       return;
     }
 
-    // Stage 2: it stops working while the feed is on it.
-    if (this.stage === 2 && this.g.cameras.open && this.g.cameras.selected === this.post) {
+    // Stage 2: it stops working while the feed is on it — and then it looks.
+    //
+    // First it goes still, turned away from the lens (a cut you only see as a
+    // skipped frame on a 12 fps feed). Two seconds later its head comes round
+    // 150 degrees, at one speed, and stops on the camera. The body is turned
+    // so that is exactly where the head ends up: the camera's bearing, less
+    // the turn. Look away and it is working again, as if it never stopped.
+    const post = POSTS[this.post];
+    if (this.stage === 2 && post && this.g.cameras.open && this.g.cameras.selected === this.post) {
       this._watchT += dt;
-      if (this._watchT > 1.6) {
-        this.g.customers.play(this.entity, "Idle_Loop", 0.9);
-        this.entity.group.rotation.y = POSTS[this.post].rot + Math.PI;
+      const e = this.entity;
+      if (this._watchT > 1.6 && !this._stilled) {
+        this._stilled = true;
+        const cam = this.g.cameras.camFor(this.post);
+        const p = e.group.position;
+        const toCam = cam ? Math.atan2(cam.position.x - p.x, cam.position.z - p.z) : post.rot + Math.PI;
+        e.group.rotation.y = toCam - HEAD_TURN;
+        this.g.customers.play(e, "NC_Stand_Still_Loop", 0.12);
+      }
+      if (this._watchT > 3.6 && !this._turned) {
+        this._turned = true;
+        this.g.customers.play(e, "NC_Head_Turn_Slow", 0.25);   // once, and it stays
       }
     } else {
+      if (this._stilled && this.entity && post) {
+        this.entity.group.rotation.y = post.rot;
+        this.g.customers.play(this.entity, post.anim, 0.2);
+      }
       this._watchT = 0;
+      this._stilled = this._turned = false;
     }
   }
 }

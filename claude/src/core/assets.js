@@ -90,6 +90,16 @@ export const MODEL = {
   poster2:       "assets/models_blender/poster2.glb",
   poster3:       "assets/models_blender/poster3.glb",
 
+  // ——— the back of the building (props_rooms.py) ———————————————————
+  toilet:        "assets/models_blender/toilet.glb",
+  sink:          "assets/models_blender/sink.glb",
+  mirror:        "assets/models_blender/mirror.glb",
+  towels:        "assets/models_blender/towels.glb",
+  grabbar:       "assets/models_blender/grabbar.glb",
+  stockrack_a:   "assets/models_blender/stockrack_a.glb",
+  stockrack_b:   "assets/models_blender/stockrack_b.glb",
+  coolerdoor:    "assets/models_blender/coolerdoor.glb",
+
   // ——— past the forecourt (props_land.py) ————————————————————————————
   ridges:        "assets/models_blender/ridges.glb",
   juniper:       "assets/models_blender/juniper.glb",
@@ -135,10 +145,15 @@ export const MODEL = {
   gore_smear:      "assets/models_blender/gore_smear.glb",
   gore_drips:      "assets/models_blender/gore_drips.glb",
 
-  // ——— the one thing still from outside: the character rig ————————
-  // A skeleton and 46 animation clips (Quaternius, CC0). Rigging and
-  // animating a human is not the same job as modelling a bottle.
-  human:         "assets/characters/AnimationLibrary_Godot_Standard.gltf",
+  // ——— the character ——————————————————————————————————————————————
+  // The Quaternius mannequin and its skeleton (CC0), taken through Blender:
+  // the seventeen library clips the game plays, plus thirteen performances
+  // authored for it there (char_clips.py) — the Attendant's stillness and its
+  // head turn, mopping, restocking, the cold, the payphone, the kerb, the
+  // cigarette. One file, one armature: clips authored on a re-imported
+  // skeleton only land right on that skeleton. tools/charcheck.js proves the
+  // library clips still land within a millimetre of the original file.
+  human:         "assets/characters/nc_character.glb",
 };
 
 export const TEX = {
@@ -289,7 +304,7 @@ const PROP_TEX = {
   NC_p_rubber: ["prop_rubber", 0.3], NC_car_tyre: ["prop_rubber", 0.3],
   NC_p_paper: ["prop_paper", 0.3], NC_p_tarp: ["prop_tarp", 0.35],
   NC_fx_body: ["prop_wear", 0.9], NC_fx_regbody: ["prop_wear", 0.6], NC_fx_green: ["prop_wear", 0.9],
-  NC_fx_upright: ["prop_metal", 0.6], NC_fx_peg: ["prop_peg", 0.4],
+  NC_fx_upright: ["prop_metal", 0.6], NC_fx_peg: ["prop_peg", 0.4], NC_fx_porcelain: ["prop_wear", 0.9],
   NC_p_card: ["prop_card", 0.45, "albedo"],
   NC_p_rust: ["prop_rust", 0.7, "albedo"],
   NC_p_conc: ["prop_conc", 1.2, "albedo"],
