@@ -1,14 +1,27 @@
-# THE NIGHT COUNT — textured playable preview
+# THE NIGHT COUNT
 
 A 1997 gas-station horror game. Six night shifts on a desert road: clock in,
 mop, restock, read the pumps, serve whoever stops, lock up. Something is wrong
 with the station, and it gets worse each night.
 
-**▶ Play it: https://bnaunidh.github.io/nightcount/**
+**▶ Play: https://bnaunidh.github.io/nightcount/**
 
-Runs in the browser. No install, no plugins, nothing to sign in to. Give it a
-moment on first load — it streams about 45 MB of models and textures before the
-shift starts, and caches them afterwards.
+Runs in the browser — no install, no plugins, nothing to sign in to. Give it a
+moment on first load; it streams its models and textures before the shift
+starts and caches them afterwards.
+
+## Two editions
+
+This site carries two builds of the same game, side by side:
+
+| | built by | |
+|---|---|---|
+| [`/chatgpt/`](https://bnaunidh.github.io/nightcount/chatgpt/) | ChatGPT | the default — the root URL opens this one |
+| [`/claude/`](https://bnaunidh.github.io/nightcount/claude/) | Claude | |
+
+Open **DEV MODE** from the main menu (passcode **1234**) and the first row,
+**Edition**, switches to the other build — it opens straight onto that
+build's own dev panel.
 
 ## Controls
 
@@ -18,33 +31,20 @@ shift starts, and caches them afterwards.
 | mouse | look |
 | `Shift` | sprint |
 | `E` | interact |
-| `F` | equip / toggle the flashlight |
+| `F` | flashlight |
 | `Q` | notebook |
-| `1` `2` `3` `4` | equip an inventory slot (`1` flashlight, `2` cellphone) |
-| `0` | stow the held item |
-| `G` | put the held item back where it came from |
 | `Tab` | task list |
 | `Esc` | release the mouse / menu |
 
-During a conversation, click a reply or press `1` / `2` / `3`.
+(ChatGPT's edition adds an inventory on `1`–`4`, `0` to stow and `G` to put an
+item back.)
 
-## Night 1, if you get stuck
+## Building the site
 
-Clock in at the machine beside **OFFICE** on the shop's back wall. A delivery
-truck arrives after that — unload its two cases at **STOCK RECEIVING**, then
-load the two **EMPTY RETURNS** crates onto the truck with `E`. Talk to the
-driver afterwards, then look toward the road.
+`python3 tools/build_site.py` copies both editions from their working folders,
+applies the dev-mode patch to each (`tools/patch_edition.py`), and checks every
+asset path either one names against the files with exact case — macOS forgives
+a wrong-case path and GitHub Pages does not.
 
-## What this is
-
-This edition was built by ChatGPT on top of the original project: textured
-station and props, fifteen shelf products, ten character looks, ten vehicles
-with animated doors and wheels, sixteen custom character clips, 36 sound cues,
-doors and signage, a four-slot inventory, and a scripted Night 1 encounter.
-
-Built with [three.js](https://threejs.org) (MIT). Models, textures and sound are
-CC0 or CC-BY — see `docs/ATTRIBUTION.md` for the full credit list. The game's
-own models were built for it in Blender.
-
-Work in progress. `docs/` holds the story bible, the shift plan and the asset
-manifests; `src/` is the game.
+Built with [three.js](https://threejs.org) (MIT). Models, textures and sound
+are CC0 or CC-BY; each edition's credits screen has the full list.

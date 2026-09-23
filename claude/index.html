@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>THE NIGHT COUNT</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- The roadside sign, lit, on a black lot. Inline so a file:// copy of the
+     game does not go looking for a favicon that is not there. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23070809'/%3E%3Crect x='14.6' y='14' width='2.8' height='15' fill='%23343026'/%3E%3Crect x='6' y='4' width='20' height='11' rx='1.5' fill='%23e8b23a'/%3E%3Crect x='8' y='6.5' width='16' height='2.2' fill='%23151107'/%3E%3Crect x='8' y='10.3' width='11' height='2.2' fill='%23151107'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="src/ui/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="view"></canvas>
+
+  <!-- in-world HUD -------------------------------------------------------->
+  <div id="hud" class="hidden">
+    <div id="prompt" class="hidden"><span id="promptKey">E</span><span id="promptText"></span></div>
+    <div id="crosshair"></div>
+    <div id="clock"></div>
+    <div id="objective"><div id="objTitle">TONIGHT</div><ul id="objList"></ul></div>
+    <div id="subs"></div>
+    <div id="toast"></div>
+  </div>
+
+  <!-- full-screen focus surfaces (register, cameras, documents, forms) ----->
+  <div id="focus" class="hidden"></div>
+
+  <!-- menus --------------------------------------------------------------->
+  <div id="menu" class="hidden"></div>
+  <div id="fade"></div>
+  <div id="titlecard" class="hidden"><div id="tcMain"></div><div id="tcSub"></div></div>
+
+  <div id="boot">
+    <div id="bootInner">
+      <div id="bootTitle">MERIDIAN</div>
+      <div id="bootBar"><i></i></div>
+      <div id="bootMsg">loading station 41</div>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/jsm/"
+  }
+}
+</script>
+<script type="module" src="src/main.js"></script>
+<noscript><p style="color:#ccc;font:14px monospace;padding:2em">This game requires JavaScript and WebGL.</p></noscript>
+</body>
+</html>
