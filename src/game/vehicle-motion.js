@@ -37,10 +37,10 @@ export class VehicleMotion {
     this.steer=THREE.MathUtils.damp(this.steer,moving?THREE.MathUtils.clamp(v.turnDemand||0,-.46,.46):0,8,dt);
     for(const w of this.wheels){w.pivot.rotation.y=w.front?this.steer:0;if(moving)w.spin.rotation.x=(w.spin.rotation.x+v.speed*dt/w.radius)%(Math.PI*2);}
     const accel=dt>0?(v.speed-this.lastSpeed)/dt:0;this.lastSpeed=v.speed;
-    const pitch=moving?THREE.MathUtils.clamp(accel*.007,-.035,.025):v.state==='SETTLING'?Math.sin(v.t*9)*.025*Math.max(0,1-v.t/.8):0;
+    const pitch=moving?THREE.MathUtils.clamp(accel*.004,-.02,.016):0;
     this.mount.rotation.x=THREE.MathUtils.damp(this.mount.rotation.x,pitch,7,dt);
     this.mount.rotation.z=THREE.MathUtils.damp(this.mount.rotation.z,moving?-this.steer*Math.min(.045,v.speed*.008):0,5,dt);
-    this.mount.position.y=moving?Math.sin(this.time*13)*Math.min(.008,v.speed*.001):0;
+    this.mount.position.y=THREE.MathUtils.damp(this.mount.position.y,moving?Math.sin(this.time*6.5)*Math.min(.003,v.speed*.0003):0,9,dt);
     for(const d of this.doors){d.amount=THREE.MathUtils.damp(d.amount,d.target,7,dt);d.pivot.rotation.y=-d.side*smooth(d.amount)*1.12;}
     const signaling=['TURN_IN','CROSS_FORECOURT','PARKING','DEPARTING'].includes(v.state),side=Math.sign(v.turnDemand)||-1;
     for(const s of this.signals)s.lamp.material.color.setHex(signaling&&s.side===side&&this.time%1<.48?0xffa027:0x3e2a0b);

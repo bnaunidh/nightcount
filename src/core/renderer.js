@@ -1,10 +1,5 @@
-// THE NIGHT COUNT — renderer + the "1997" composite pass.
-//
-// Art direction is enforced here, not in the assets: everything is rendered to
-// a small internal buffer (640x360 by default), colour-quantised with an
-// ordered dither, grained, vignetted, and blown up with nearest-neighbour.
-// That single pipeline is what makes photographic props, low-poly vehicles and
-// flat level geometry read as one 1997 game.
+// THE NIGHT COUNT — scene renderer and display composite.
+// Clean display output with optional period film effects and dedicated CCTV treatment.
 import * as THREE from "three";
 import { settings, settingsBus, qualityPreset } from "./settings.js";
 import { clamp } from "./util.js";
@@ -71,7 +66,9 @@ void main(){
     col = pow(col, vec3(0.92));
   }
 
-  col *= uBright;
+  // The scene target is sRGB, but sampling decodes it back to linear.
+  // Convert once for display before grain/dither; omitting this crushed shadows.
+  col = linearToOutputTexel(vec4(max(col * uBright, 0.0), 1.0)).rgb;
 
   // vignette
   float vig = 1.0 - uVignette * smoothstep(0.28, 0.95, r2 * 1.9);
@@ -103,7 +100,7 @@ export class Renderer {
     this.gl.setPixelRatio(1);
     this.gl.autoClear = true;
     this.gl.shadowMap.enabled = true;
-    this.gl.shadowMap.type = THREE.PCFShadowMap;
+    this.gl.shadowMap.type = THREE.PCFSoftShadowMap;
     this.gl.outputColorSpace = THREE.SRGBColorSpace;
     this.gl.toneMapping = THREE.NoToneMapping;
 
@@ -154,7 +151,7 @@ export class Renderer {
     if (!this.rt || this.rt.width !== iw || this.rt.height !== ih) {
       this.rt?.dispose();
       this.rt = new THREE.WebGLRenderTarget(iw, ih, {
-        minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter,
+        minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
         depthBuffer: true, colorSpace: THREE.SRGBColorSpace,
       });
     }

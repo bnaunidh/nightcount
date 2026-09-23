@@ -254,7 +254,7 @@ export class CustomerSystem {
           actions[n] = a;
         }
       }
-      actions.Idle_Loop?.play();
+      // The first pose is selected once after the character is assembled.
     } else {
       const box = new THREE.Mesh(new THREE.BoxGeometry(0.5, def.height || HEIGHT, 0.35),
         new THREE.MeshLambertMaterial({ color: def.coat || 0x4a4a4a }));
@@ -291,7 +291,7 @@ export class CustomerSystem {
     group.userData.heightMetres = def.height;
     const c = {
       id, def, group, mixer, actions, state: "idle",
-      path: [], speed: def.speed || 1.32, current: "Idle_Loop",
+      path: [], speed: def.speed || 1.22, moveSpeed: 0, current: "Idle_Loop",
       cameraOnly: !!opts.cameraOnly, lineIndex: 0,
     };
     if (c.cameraOnly) group.traverse((o) => { o.layers.set(LAYER_CAMERA_ONLY); });
@@ -313,7 +313,8 @@ export class CustomerSystem {
         this.play(c, this.idleFor(c), 0.22);
       }
     });
-    this.play(c, this.idleFor(c));
+    this.play(c, this.idleFor(c), 0);
+    mixer?.update(0);group.updateMatrixWorld(true);
     return c;
   }
 
@@ -329,8 +330,11 @@ export class CustomerSystem {
     if (name === "Idle_Loop") name = this.idleFor(c);
     if (c.dead || !c.mixer || !c.actions[name] || c.current === name) return;
     const from = c.actions[c.current], to = c.actions[name];
-    to.reset().play();
-    if (from) { to.crossFadeFrom(from, fade, false); } else { to.fadeIn(fade); }
+    // A cut must clear earlier crossfades too, otherwise a hidden idle action
+    // keeps blending into the seated pose and pulls a heel below the floor.
+    if(fade<=0)c.mixer.stopAllAction();
+    to.reset().setEffectiveTimeScale(1).setEffectiveWeight(1).play();
+    if (fade>0 && from?.isRunning()) { to.crossFadeFrom(from, fade, false); } else if(fade>0) { to.fadeIn(fade); }
     c.current = name;
   }
 
@@ -338,6 +342,7 @@ export class CustomerSystem {
     if(c.dead)return;
     c.path = points.map((p) => (p.isVector3 ? p.clone() : new THREE.Vector3(p[0], 0, p[1])));
     c.onArrive = onArrive;
+    c.lookYaw = null;
     this.play(c, c.def.uniform ? "Walk_Formal_Loop" : "Walk_Loop");
   }
 
@@ -370,7 +375,7 @@ export class CustomerSystem {
       [L.CUSTOMER.x + 1.6, L.CUSTOMER.z + 0.4],
       [L.CUSTOMER.x, L.CUSTOMER.z],
     ], () => {
-      c.group.rotation.y = Math.PI;
+      c.lookYaw = Math.PI;
       this.play(c, "NC_Greet");
       c.state = "counter";
       this.g.bus.emit("customer:counter", c);
@@ -476,12 +481,14 @@ export class CustomerSystem {
 
   transferCar(c,enter,done) {
     const v=c.vehicle;if(!v?.motion||v.dead){done?.();return;}
-    c.state=enter?'entering_car':'exiting_car';c.path=[];c.onArrive=null;
+    c.state=enter?'entering_car':'exiting_car';c.path=[];c.onArrive=null;c.moveSpeed=0;c.lookYaw=null;
     const outside=v.motion.doorPoint(),inside=v.motion.doorPoint(true);
     c.carTransfer={v,enter,done,t:0,from:enter?outside:inside,to:enter?inside:outside};
     c.group.position.copy(c.carTransfer.from);c.group.visible=enter;
     c.group.rotation.y=Math.atan2(c.carTransfer.to.x-c.carTransfer.from.x,c.carTransfer.to.z-c.carTransfer.from.z);
-    this.play(c,enter?'NC_Car_Enter':'NC_Car_Exit',.12);v.motion.door(true);
+    this.play(c,enter?'NC_Car_Enter':'NC_Car_Exit',.24);
+    // Hold the starting pose while the door clears the occupant.
+    const action=c.actions[c.current];if(action){action.time=0;action.paused=true;}v.motion.door(true);
     this.g.audio.play('veh_car_door',{vol:.32,pos:outside,ref:4});
   }
 
@@ -489,6 +496,7 @@ export class CustomerSystem {
     const tr=c.carTransfer;if(!tr)return false;
     if(tr.v.dead){c.carTransfer=null;this.despawn(c);return true;}
     tr.t+=dt;
+    const action=c.actions[c.current];if(action&&tr.t>=.35)action.paused=false;
     const u=THREE.MathUtils.smoothstep(tr.t,.45,2.15);
     c.group.position.lerpVectors(tr.from,tr.to,u);
     c.group.visible=tr.enter?u<.88:u>.12;
@@ -567,6 +575,34 @@ export class CustomerSystem {
 
   }
 
+  updateWalk(c,dt) {
+    if(!c.path.length){
+      c.moveSpeed=0;
+      if(c.lookYaw!=null){const diff=THREE.MathUtils.euclideanModulo(c.lookYaw-c.group.rotation.y+Math.PI,Math.PI*2)-Math.PI;c.group.rotation.y+=diff*(1-Math.exp(-7*dt));}
+      return;
+    }
+    const target=c.path[0],dx=target.x-c.group.position.x,dz=target.z-c.group.position.z,d=Math.hypot(dx,dz);
+    if(d<.006){
+      c.group.position.x=target.x;c.group.position.z=target.z;c.path.shift();
+      if(!c.path.length){c.moveSpeed=0;this.play(c,"Idle_Loop",.32);const cb=c.onArrive;c.onArrive=null;cb?.();}
+      return;
+    }
+    const want=Math.atan2(dx,dz),diff=THREE.MathUtils.euclideanModulo(want-c.group.rotation.y+Math.PI,Math.PI*2)-Math.PI;
+    c.group.rotation.y+=THREE.MathUtils.clamp(diff,-3.1*dt,3.1*dt);
+    // Ease into motion, slow for a sharp turn, and brake before the destination.
+    const alignment=Math.max(0,Math.cos(diff)),brake=c.path.length===1?Math.sqrt(2*1.65*d):c.speed;
+    const wanted=Math.min(c.speed,brake)*alignment;
+    c.moveSpeed=THREE.MathUtils.damp(c.moveSpeed||0,wanted,5,dt);
+    const step=Math.min(d,c.moveSpeed*dt);
+    c.group.position.x+=dx/d*step;c.group.position.z+=dz/d*step;
+    const action=c.actions[c.current];
+    if(action&&c.current.startsWith('Walk_')){
+      // Advance the gait by distance, so feet don't run while the body slows.
+      const strideSpeed=1.14*(c.def.height/1.78);
+      action.setEffectiveTimeScale(step/Math.max(.0001,dt)/strideSpeed);
+    }
+  }
+
   update(dt) {
     // departing vehicles
     if (this._departing && this._departing.length) {
@@ -583,6 +619,7 @@ export class CustomerSystem {
       }
     }
     for (const c of this.active) {
+      if(!c.dead&&!c.carTransfer)this.updateWalk(c,dt);
       c.mixer?.update(dt);
       if(c.dead){
         c.fallT+=dt;
@@ -594,27 +631,7 @@ export class CustomerSystem {
       if(this.updateTransfer(c,dt))continue;
       this._vox(c, dt);
       if(c.state==='counter'&&c.current===this.idleFor(c)&&(c.waitT||0)>(c.nextGesture||8)){c.nextGesture=c.waitT+14+(c.id.charCodeAt(1)%5);this.play(c,'NC_Check_Watch',.25);}
-      if (!c.path.length) continue;
-      const target = c.path[0];
-      const dx = target.x - c.group.position.x, dz = target.z - c.group.position.z;
-      const d = Math.hypot(dx, dz);
-      if (d < 0.14) {
-        c.path.shift();
-        if (!c.path.length) {
-          this.play(c, "Idle_Loop");
-          const cb = c.onArrive; c.onArrive = null;
-          cb?.();
-        }
-        continue;
-      }
-      const step = Math.min(d, c.speed * dt);
-      c.group.position.x += (dx / d) * step;
-      c.group.position.z += (dz / d) * step;
-      const want = Math.atan2(dx, dz);
-      let diff = want - c.group.rotation.y;
-      while (diff > Math.PI) diff -= Math.PI * 2;
-      while (diff < -Math.PI) diff += Math.PI * 2;
-      c.group.rotation.y += diff * Math.min(1, dt * 6);
+
     }
   }
 }

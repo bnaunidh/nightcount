@@ -741,7 +741,7 @@ export class Station {
     const g = this.group;
     // three.js r155+ uses physical light units: point/spot intensity is in
     // candela, so the readable numbers below are scaled up on creation.
-    const PT = 26, SP = 42;
+    const PT = 13, SP = 24;
     const mk = (color, inten, dist, x, y, z, name) => {
       const l = new THREE.PointLight(color, inten * PT, dist, 1.4);
       l.position.set(x, y, z);
@@ -750,16 +750,16 @@ export class Station {
       this.lights[name] = l;
       return l;
     };
-    // interior fluorescents — cold, slightly green
-    mk(0xdfeee6, 1.15, 11, -4.6, 2.95, 3.2, "fl_counter");
-    mk(0xdfeee6, 1.0, 11, 0.5, 2.95, 5.2, "fl_mid");
-    mk(0xdfeee6, 1.0, 11, 5.6, 2.95, 5.2, "fl_east");
-    mk(0xdfeee6, 0.75, 9, -6.0, 2.95, 6.8, "fl_west");
-    mk(0xd7ece4, 0.7, 7, 6.9, 2.7, 10.0, "fl_bath");
+    // Neutral warm fluorescents; retain detail near fixtures without white clipping.
+    mk(0xf3ecdf, 1.15, 11, -4.6, 2.95, 3.2, "fl_counter");
+    mk(0xf3ecdf, 1.0, 11, 0.5, 2.95, 5.2, "fl_mid");
+    mk(0xf3ecdf, 1.0, 11, 5.6, 2.95, 5.2, "fl_east");
+    mk(0xf3ecdf, 0.75, 9, -6.0, 2.95, 6.8, "fl_west");
+    mk(0xe9eee7, 0.7, 7, 6.9, 2.7, 10.0, "fl_bath");
     mk(0xe8dcc0, 0.65, 7, 0.6, 2.7, 10.2, "fl_office");
-    mk(0xdfeee6, 0.7, 8, -6.2, 2.7, 10.2, "fl_stock");
-    mk(0xdfeee6, .85, 8, .5, 2.55, 1.5, "fl_aisle_front");
-    mk(0xdfeee6, .85, 8, 5.5, 2.55, 1.5, "fl_entry_aisle");
+    mk(0xf3ecdf, 0.7, 8, -6.2, 2.7, 10.2, "fl_stock");
+    mk(0xf3ecdf, .85, 8, .5, 2.55, 1.5, "fl_aisle_front");
+    mk(0xf3ecdf, .85, 8, 5.5, 2.55, 1.5, "fl_entry_aisle");
     // cooler spill
     mk(0xcfe6ec, 0.5, 6, 3.0, 1.4, 6.5, "cooler_glow");
 
@@ -770,11 +770,14 @@ export class Station {
     canopy.castShadow = true;
     canopy.shadow.mapSize.set(1024, 1024);
     canopy.shadow.camera.far = 40;
+    canopy.shadow.bias = -.00015;
+    canopy.shadow.normalBias = .035;
+    canopy.shadow.radius = 2;
     g.add(canopy, canopy.target);
     this.lights.canopy = canopy;
 
     // store front glow spilling onto the apron
-    const front = new THREE.SpotLight(0xdfe9e2, 1.5 * SP, 22, Math.PI / 2.4, 0.7, 1.4);
+    const front = new THREE.SpotLight(0xf2eadf, 1.5 * SP, 22, Math.PI / 2.4, 0.7, 1.4);
     front.position.set(0, 2.6, 1.5);
     front.target.position.set(0, 0, -4.0);
     g.add(front, front.target);
@@ -787,11 +790,11 @@ export class Station {
     g.add(rear, rear.target);
     this.lights.rear = rear;
 
-    // moon / sky fill — never enough to see by, just enough to see shapes
-    const hemi = new THREE.HemisphereLight(0x2b3444, 0x0c0d10, 0.5);
+    // Soft sky bounce keeps outdoor people and paths readable after dark.
+    const hemi = new THREE.HemisphereLight(0x7c8caa, 0x41404a, 0.72);
     g.add(hemi);
     this.lights.hemi = hemi;
-    const moon = new THREE.DirectionalLight(0x5a6a86, 0.3);
+    const moon = new THREE.DirectionalLight(0x9cabc5, 0.4);
     moon.position.set(-30, 40, -20);
     g.add(moon);
     this.lights.moon = moon;

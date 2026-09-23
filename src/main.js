@@ -6,6 +6,7 @@ import { loadSettings, settings } from "./core/settings.js";
 import { UI } from "./core/ui.js";
 import { Player } from "./core/player.js";
 import { Interactor } from "./core/interact.js";
+import { buildSurroundings } from "./world/surroundings.js";
 import { Station } from "./world/station.js";
 import { buildAdditions, captureProps } from "./world/additions.js";
 import { dressStation, mergeStatics, settleProps, fitPropColliders } from "./world/props.js";
@@ -192,6 +193,7 @@ async function boot() {
   await buildAdditions(scene, station);
   captureProps(scene, station);
   mergeStatics(scene);
+  buildSurroundings(scene,station);
 
   const player = new Player(camera, station);
   player.teleport(station.anchors.spawn_outside, Math.PI);

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { settings } from '../core/settings.js';
 const smooth=(a,b,x)=>{const t=THREE.MathUtils.clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
-export function daylightAt(minutes){const h=((minutes%1440)+1440)%1440/60;return h<12?smooth(4.8,6.5,h):1-smooth(19.5,21,h);}
+export function daylightAt(minutes){const h=((minutes%1440)+1440)%1440/60;return h<12?smooth(5.15,7.5,h):1-smooth(19.5,21,h);}
 
 export class Weather {
   constructor(g){
@@ -22,11 +22,11 @@ export class Weather {
   update(dt){
     const g=this.g,day=daylightAt(g.minutes??1220),storm=this.rain;
     this.daylight=day;
-    const sky=new THREE.Color(0x05070d).lerp(new THREE.Color(storm?0x596971:0x7eabc1),day);
-    const twilight=(1-Math.abs(day-.5)*2)*(storm?.04:.22);sky.lerp(new THREE.Color(0x996e63),twilight);
+    const sky=new THREE.Color(0x0b111c).lerp(new THREE.Color(storm?0x343f49:0x4d5967),day);
+    const twilight=(1-Math.abs(day-.5)*2)*(storm?.025:.065);sky.lerp(new THREE.Color(0x73656a),twilight);
     g.scene.background.copy(sky);if(g.scene.fog){g.scene.fog.color.copy(sky);g.scene.fog.near=storm?23:34;g.scene.fog.far=storm?95:170;}
-    const hemi=g.station.lights.hemi;hemi.color.setHex(0x2b3444).lerp(new THREE.Color(0xc4dce8),day);hemi.intensity=.5+day*(storm?.9:1.25);
-    this.sun.intensity=day*(storm?.3:1.5);g.station.lights.moon.intensity=.3*(1-day);
+    const hemi=g.station.lights.hemi;hemi.color.setHex(0x5c6c86).lerp(new THREE.Color(0x98a5b0),day);hemi.groundColor.setHex(0x303139).lerp(new THREE.Color(0x68675e),day);hemi.intensity=.50+day*(storm?.22:.32);
+    this.sun.intensity=day*(storm?.12:.38);g.station.lights.moon.intensity=.24*(1-day);
     const h=((g.minutes%1440)+1440)%1440/60,angle=(h-6)/12*Math.PI;this.sun.position.set(Math.cos(angle)*70,Math.max(8,Math.sin(angle)*70),-40);
     this.flash=Math.max(0,this.flash-dt*2.3);this.lightning.intensity=settings.reduceFlicker?0:this.flash*2.5;
     if(!storm)return;

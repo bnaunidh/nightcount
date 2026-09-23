@@ -11,8 +11,8 @@ export const DEFAULTS = {
   // look
   sensitivity: 0.85, invertY: false, fov: 72,
   // video
-  brightness: 1.12, quality: "medium", resScale: 1.0, fullscreen: false,
-  grain: 1.0, aberration: 0.55, vignette: 1.0, dither: true, shake: 1.0,
+  graphicsVersion: 3, brightness: 1.0, quality: "medium", resScale: 1.0, fullscreen: false,
+  grain: 0.025, aberration: 0, vignette: 0.24, dither: false, shake: 0.55,
   motionBlur: false, reduceFlicker: false,
   // accessibility / comfort
   subtitles: true, subtitleSize: 1.0, subtitleBg: true,
@@ -35,6 +35,14 @@ export function loadSettings() {
     const raw = store.get(KEY);
     if (raw) {
       const o = JSON.parse(raw);
+      // Upgrade old defaults, preserving any deliberately adjusted values.
+      if ((o.graphicsVersion || 1) < 2) {
+        const legacy = {brightness:1.12, grain:1, aberration:.55, vignette:1, dither:true, shake:1};
+        for (const [key,value] of Object.entries(legacy)) if(o[key]===value) o[key]=DEFAULTS[key];
+        o.graphicsVersion=3;
+        store.set(KEY,JSON.stringify(o));
+      }
+      if (o.graphicsVersion===2) { if(o.grain===.12)o.grain=DEFAULTS.grain;o.graphicsVersion=3;store.set(KEY,JSON.stringify(o)); }
       for (const k of Object.keys(DEFAULTS)) {
         if (k === "keys") Object.assign(settings.keys, o.keys || {});
         else if (k in o) settings[k] = o[k];
@@ -64,9 +72,9 @@ export function resetSettings() {
 }
 
 export const qualityPreset = () => ({
-  low:    { internalW: 480, shadows: false, shadowSize: 512,  maxLights: 5,  camFps: 8  },
-  medium: { internalW: 640, shadows: true,  shadowSize: 1024, maxLights: 8,  camFps: 12 },
-  high:   { internalW: 960, shadows: true,  shadowSize: 2048, maxLights: 12, camFps: 20 },
+  low:    { internalW: 640, shadows: false, shadowSize: 512,  maxLights: 5,  camFps: 8  },
+  medium: { internalW: 960, shadows: true,  shadowSize: 1024, maxLights: 8,  camFps: 12 },
+  high:   { internalW: 1280, shadows: true,  shadowSize: 2048, maxLights: 12, camFps: 20 },
 }[settings.quality] || { internalW: 640, shadows: true, shadowSize: 1024, maxLights: 8, camFps: 12 });
 
 export const clampVol = (v) => clamp(v, 0, 1);
